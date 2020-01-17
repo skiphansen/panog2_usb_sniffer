@@ -10,3 +10,6 @@
 [submodule "pano"]
 	path = pano
 	url = https://github.com/skiphansen/pano_blocks
+[submodule "cores/ethernet_mac"]
+	path = cores/ethernet_mac
+	url = https://github.com/yol/ethernet_mac.git
