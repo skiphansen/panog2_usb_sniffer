@@ -17,7 +17,21 @@ bool ButtonJustPressed(void);
 void ClearRxFifo(void);
 
 #define MAX_ETH_FRAME_LEN     1518
+int gRxCount;
 uint8_t gRxBuf[MAX_ETH_FRAME_LEN];
+
+uint8_t gTxBuf[] = {
+   0xff,0xff,0xff,0xff,0xff,0xff,0x00,0x00,
+   0x00,0x00,0x00,0x00,0x88,0x99,0x03,0x00,
+   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+   't','e','s','t'
+};
+
+
 
 //-----------------------------------------------------------------
 // main
@@ -78,41 +92,47 @@ int main(int argc, char *argv[])
           }
           printf("\n");
        }
-       if(!(ETH_STATUS & ETH_STATUS_RXEMPTY)) {
+       while(!(ETH_STATUS & ETH_STATUS_RXEMPTY)) {
           Count = (ETH_RX() << 8) + ETH_RX();
           if(Count < sizeof(gRxBuf)) {
+             gRxCount++;
              for(i = 0; i < Count; i++) {
                 gRxBuf[i] = ETH_RX();
              }
-             printf("Read %d (0x%x) bytes from Rx Fifo:",Count,Count);
+             printf("%d: Read %d (0x%x) bytes from Rx Fifo:",gRxCount,Count,
+                    Count);
              for(i = 0; i < Count; i++) {
                 if((i & 0xf) == 0) {
                    printf("\n");
                 }
                 printf("0x%02x ",gRxBuf[i]);
              }
-             printf("\nEthernet status after read: 0x%x\n",ETH_STATUS);
+             printf("\n");
+             if(!(ETH_STATUS & ETH_STATUS_RXEMPTY)) {
+                printf("Another RX frame is waiting\n");
+             }
           }
           else {
              printf("Invalid data length %d (0x%x)\n",Count,Count);
              ClearRxFifo();
           }
        }
+       if(ButtonJustPressed()) {
+          printf("Sending test frame, eth status: 0x%x\n",ETH_STATUS);
+          ETH_TX = (uint8_t) ((sizeof(gTxBuf) >> 8) & 0xff);
+          ETH_TX = (uint8_t) (sizeof(gTxBuf) & 0xff);
+          for(i = 0; i < sizeof(gTxBuf); i++) {
+             ETH_TX = gTxBuf[i];
+          }
+          printf("eth status: 0x%x\n",ETH_STATUS);
+       }
        REG_WR(GPIO_BASE + GPIO_OUTPUT,Led);
        for(i = 0; i < (Fast ? 3 : 10); i++) {
           timer_sleep(50);
-          if(ButtonJustPressed()) {
-             Fast = !Fast;
-             break;
-          }
        }
        REG_WR(GPIO_BASE + GPIO_OUTPUT,0);
        for(i = 0; i < (Fast ? 3 : 10); i++) {
           timer_sleep(50);
-          if(ButtonJustPressed()) {
-             Fast = !Fast;
-             break;
-          }
        }
        switch(Led) {
           case GPIO_BIT_RED_LED:
