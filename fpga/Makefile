@@ -11,6 +11,10 @@ SRC_DIR      += $(CORES_DIR)/core_soc/src_v
 SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/$(RISCV_CORE)
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
+SRC_DIR      += $(CORES_DIR)/ethernet_mac
+SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
+SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
+
 
 EXTRA_VFLAGS += CPU_SELECT_RISCV=1
 
@@ -18,6 +22,8 @@ EXTRA_VFLAGS += CPU_SELECT_RISCV=1
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/axi4lite_dist.v
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
 EXCLUDE_SRC += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper/tcm_mem_ram.v
+EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
+EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/xilinx/mii_gmii_io_spartan6.vhd
 
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog
 

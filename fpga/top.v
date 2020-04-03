@@ -14,15 +14,36 @@ module top
     ,input           uart_txd_i
     ,output          uart_rxd_o
 
+    // MII (Media-independent interface)
+    ,input         mii_tx_clk_i
+    ,output        mii_tx_er_o
+    ,output        mii_tx_en_o
+    ,output [7:0]  mii_txd_o
+    ,input         mii_rx_clk_i
+    ,input         mii_rx_er_i
+    ,input         mii_rx_dv_i
+    ,input [7:0]   mii_rxd_i
+
+    // GMII (Gigabit media-independent interface)
+    ,output        gmii_gtx_clk_o
+
+    // RGMII (Reduced pin count gigabit media-independent interface)
+    ,output        rgmii_tx_ctl_o
+    ,input         rgmii_rx_ctl_i
+
+     // MII Management Interface
+     ,output        mdc_o
+     ,inout         mdio_io
 );
 
 // Generate 32 Mhz system clock and 25 Mhz audio clock from 125 Mhz input clock
 wire clk32;
 
-IBUFG clkin1_buf
-(   .O (clkin1),
+IBUFG clk125_buf
+(   .O (clk125),
     .I (SYSCLK)
 );
+
 
 PLL_BASE
     #(.BANDWIDTH              ("OPTIMIZED"),
@@ -54,7 +75,7 @@ PLL_BASE
       .RST                   (RESET),
        // Input clock control
       .CLKFBIN               (clkfbout_buf),
-      .CLKIN                 (clkin1)
+      .CLKIN                 (clk125)
 );
 
 // Output buffering
@@ -66,10 +87,6 @@ BUFG clkf_buf
 BUFG clk32_buf
   (.O (clk32),
    .I (clkout50));
-
-BUFG clk25_buf
-(.O (clk25),
- .I (clkout25));
 
 //-----------------------------------------------------------------
 // Reset
@@ -98,11 +115,6 @@ wire [31:0] gpio_in_w;
 wire [31:0] gpio_out_w;
 wire [31:0] gpio_out_en_w;
 
-wire signed [15:0] channel_a;
-wire signed [15:0] channel_b;
-wire signed [15:0] channel_c;
-wire signed [15:0] channel_d;
-
 fpga_top
 #(
     .CLK_FREQ(50000000)
@@ -113,8 +125,8 @@ fpga_top
 )
 u_top
 (
-     .clk_i(clk32)
-    ,.clk25_i(clk25)
+    .clock_125_i(clk125)
+    ,.clk_i(clk32)
     ,.rst_i(rst)
 
     ,.dbg_rxd_o(dbg_txd_w)
@@ -131,6 +143,27 @@ u_top
     ,.gpio_input_i(gpio_in_w)
     ,.gpio_output_o(gpio_out_w)
     ,.gpio_output_enable_o(gpio_out_en_w)
+
+    // MII (Media-independent interface)
+    ,.mii_tx_clk_i(mii_tx_clk_i)
+    ,.mii_tx_er_o(mii_tx_er_o)
+    ,.mii_tx_en_o(mii_tx_en_o)
+    ,.mii_txd_o(mii_txd_o)
+    ,.mii_rx_clk_i(mii_rx_clk_i)
+    ,.mii_rx_er_i(mii_rx_er_i)
+    ,.mii_rx_dv_i(mii_rx_dv_i)
+    ,.mii_rxd_i(mii_rxd_i)
+
+    // GMII (Gigabit media-independent interface)
+    ,.gmii_gtx_clk_o(gmii_gtx_clk_o)
+
+    // RGMII (Reduced pin count gigabit media-independent interface)
+    ,.rgmii_tx_ctl_o(rgmii_tx_ctl_o)
+    ,.rgmii_rx_ctl_i(rgmii_rx_ctl_i)
+  // 
+    ,.mdc_o(mdc_o)
+    ,.mdio_io(mdio_io)
+
 );
 
 //-----------------------------------------------------------------
@@ -169,8 +202,7 @@ assign gpio_in_w[6]  = codec_scl;
 
 genvar i;
 generate
-for (i=7; i < 32; i=i+1)
-begin
+for (i=7; i < 32; i=i+1) begin : gpio_in
     assign gpio_in_w[i]  = 1'b0;
 end
 endgenerate

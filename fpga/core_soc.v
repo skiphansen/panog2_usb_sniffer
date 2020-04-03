@@ -60,7 +60,6 @@ module core_soc
     ,input           spi_miso_i
     ,input           uart_rx_i
     ,input  [ 31:0]  gpio_input_i
-    ,input           clk25_i
 
     // Outputs
     ,output          intr_o
@@ -78,12 +77,31 @@ module core_soc
     ,output          uart_tx_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
-    ,output signed [15:0] channel_a
-    ,output signed [15:0] channel_b
-    ,output signed [15:0] channel_c
-    ,output signed [15:0] channel_d
-    ,output sample_clk
-    ,output sample_clk_128
+
+// peripheral inputs
+// Buffered 125 MHz clock
+    ,input         clock_125_i
+
+    // MII (Media-independent interface)
+    ,input         mii_tx_clk_i
+    ,output        mii_tx_er_o
+    ,output        mii_tx_en_o
+    ,output [7:0]  mii_txd_o
+    ,input         mii_rx_clk_i
+    ,input         mii_rx_er_i
+    ,input         mii_rx_dv_i
+    ,input [7:0]   mii_rxd_i
+
+// GMII (Gigabit media-independent interface)
+    ,output        gmii_gtx_clk_o
+
+// RGMII (Reduced pin count gigabit media-independent interface)
+    ,output        rgmii_tx_ctl_o
+    ,input         rgmii_rx_ctl_i
+
+// MII Management Interface
+    ,output        mdc_o
+    ,inout         mdio_io
 );
 
 wire           interrupt0_w;
@@ -494,5 +512,55 @@ u_gpio
     ,.intr_o(interrupt3_w)
 );
 
+
+eth_axi4lite u_eth (
+      // axi4lite Inputs
+    .clk_i(clk_i)
+    ,.rst_i(rst_i)
+    ,.cfg_awvalid_i(periph5_awvalid_w)
+    ,.cfg_awaddr_i(periph5_awaddr_w)
+    ,.cfg_wvalid_i(periph5_wvalid_w)
+    ,.cfg_wdata_i(periph5_wdata_w)
+    ,.cfg_wstrb_i(periph5_wstrb_w)
+    ,.cfg_bready_i(periph5_bready_w)
+    ,.cfg_arvalid_i(periph5_arvalid_w)
+    ,.cfg_araddr_i(periph5_araddr_w)
+    ,.cfg_rready_i(periph5_rready_w)
+
+    // axi4lite Outputs
+    ,.cfg_awready_o(periph5_awready_w)
+    ,.cfg_wready_o(periph5_wready_w)
+    ,.cfg_bvalid_o(periph5_bvalid_w)
+    ,.cfg_bresp_o(periph5_bresp_w)
+    ,.cfg_arready_o(periph5_arready_w)
+    ,.cfg_rvalid_o(periph5_rvalid_w)
+    ,.cfg_rdata_o(periph5_rdata_w)
+    ,.cfg_rresp_o(periph5_rresp_w)
+
+
+    // peripheral inputs
+    ,.clock_125_i(clock_125_i)
+
+    // MII (Media-independent interface)
+    ,.mii_tx_clk_i(mii_tx_clk_i)
+    ,.mii_tx_er_o(mii_tx_er_o)
+    ,.mii_tx_en_o(mii_tx_en_o)
+    ,.mii_txd_o(mii_txd_o)
+    ,.mii_rx_clk_i(mii_rx_clk_i)
+    ,.mii_rx_er_i(mii_rx_er_i)
+    ,.mii_rx_dv_i(mii_rx_dv_i)
+    ,.mii_rxd_i(mii_rxd_i)
+
+    // GMII (Gigabit media-independent interface)
+    ,.gmii_gtx_clk_o(gmii_gtx_clk_o)
+
+    // RGMII (Reduced pin count gigabit media-independent interface)
+    ,.rgmii_tx_ctl_o(rgmii_tx_ctl_o)
+    ,.rgmii_rx_ctl_i(rgmii_rx_ctl_i)
+
+    // MII Management Interface
+    ,.mdc_o(mdc_o)
+    ,.mdio_io(mdio_io)
+);
 
 endmodule
