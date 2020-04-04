@@ -26,5 +26,8 @@
 #define SPEED_10MBPS        (0 << ETH_LINK_SPEED_SHIFT)
 #define SPEED_UNSPECIFIED   (3 << ETH_LINK_SPEED_SHIFT)
 
+// Change this if you like, this was copied from the label on one of Skip's G2s
+#define MAC_ADR               0x00,0x1c,0x02,0x70,0x1d,0x5d
+
 #endif   // _ETH_IO_H_
 
