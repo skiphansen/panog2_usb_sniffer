@@ -5,13 +5,17 @@ INIT_APP := fw/eth_test
 help:
 	@echo "Usage:"
 	@echo "   REV A or B Pano (xc6slx150):"
-	@echo "      make prog_fpga  - program SPI flash"
-	@echo "      make build_all - rebuild all images from sources (optional)"
+	@echo "      make load      - load bit stream directly into FPGA"
+	@echo "      make prog_fpga - program SPI flash"
+	@echo "      make build_all - rebuild bitstream from sources (optional)"
 	@echo
 	@echo "   REV C Pano (xc6slx100):"
-	@echo "      make PLATFORM=pano-g2-c prog_fpga"
-	@echo "      make PLATFORM=pano-g2-c build_all"
-	@echo "  other make targets: prog_fpga, clean_all"
+	@echo "      make PLATFORM=pano-g2-c load"
+	@echo "      ..."
+	@echo
+	@echo "   make start_console (bit stream must be loaded)"
+	@echo
+	@echo "   other make targets: build_all, clean_all, run"
      
 build_all:
 	make -C $(INIT_APP) init_image
@@ -29,4 +33,7 @@ start_console:
 
 run:
 	make -C $(INIT_APP) run
+
+load:
+	make -C $(INIT_APP) load
 
