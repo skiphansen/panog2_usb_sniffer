@@ -23,7 +23,6 @@ EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/axi4lite_dist.v
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
 EXCLUDE_SRC += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper/tcm_mem_ram.v
 EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
-EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/xilinx/mii_gmii_io_spartan6.vhd
 
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog
 
@@ -39,10 +38,18 @@ MAP_CMDS = -w -intstyle ise -detail -ir off -ignore_keep_hierarchy -timing -ol h
 # use 4 cores
 PAR_CMDS = -w -intstyle ise -ol high  -mt 4
 
+PATCHED_ETH_MAC = ../cores/ethernet_mac/.patched
+
 .PHONY: init_and_build
+init_and_build: $(PATCHED_ETH_MAC) all
 
 TOPDIR = ..
 include $(TOPDIR)/pano/make/ise.mk
+
+$(PATCHED_ETH_MAC): ethernet_mac.patch
+	(cd $(CORES_DIR)/ethernet_mac; git reset HEAD --hard)
+	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(PANO_RTL_DIR)/ethernet_mac.patch)
+	touch $@
 
 firmware.mem:
 	make -C $(TOPDIR)/fw/imfplay_port init_image

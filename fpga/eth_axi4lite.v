@@ -31,7 +31,8 @@ module eth_axi4lite
 // Params
 //-----------------------------------------------------------------
 #(
-    parameter MAC_ADDRESS = 48'h000102030405
+// Change this if you like, this was copied from the label on one of Skip's G2s
+    parameter MAC_ADDRESS = 48'h001c02701d5d
 )
 //-----------------------------------------------------------------
 // Ports
