@@ -1,4 +1,6 @@
-.PHONY: help prog_all build_all prog_fs prog_fpga clean_all
+.PHONY: help prog_all build_all prog_fpga clean_all
+
+INIT_APP := fw/eth_test
 
 help:
 	@echo "Usage:"
@@ -9,23 +11,19 @@ help:
 	@echo "   REV C Pano (xc6slx100):"
 	@echo "      make PLATFORM=pano-g2-c prog_all"
 	@echo "      make PLATFORM=pano-g2-c build_all"
-	@echo "  other make targets: prog_fpga, prog_fs, clean_all"
+	@echo "  other make targets: prog_fpga, clean_all"
      
 prog_all:
-	make -C fpga prog_fs
 	make -C fpga prog_fpga
 
 build_all:
-	make -C fw/imfplay_port init_image
+	make -C $(INIT_APP) init_image
 	make -C fpga
-
-prog_fs:
-	make -C fpga prog_fs
 
 prog_fpga:
 	make -C fpga prog_fpga
 
 clean_all:
-	make -C fw/imfplay_port clean
+	make -C $(INIT_APP) clean
 	make -C fpga clean
 
