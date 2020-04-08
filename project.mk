@@ -5,6 +5,7 @@ GIT_INIT := $(shell if [ ! -e $(TOPDIR)/pano/.git ]; then echo "updating submodu
 
 ARCH         = riscv
 BASE_ADDRESS  = 0x0
+MEM_SIZE     = 131072
 
 # hardware defines
 CPU_KHZ       = 50000

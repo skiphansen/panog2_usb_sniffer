@@ -16,13 +16,11 @@ SRC_DIR      += $(CORES_DIR)/ethernet_mac
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
 
-
 EXTRA_VFLAGS += CPU_SELECT_RISCV=1
 
 # EXCLUDE_SRC - list of core files with local replacements
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/axi4lite_dist.v
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
-EXCLUDE_SRC += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper/tcm_mem_ram.v
 EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
 
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog
@@ -47,9 +45,9 @@ init_and_build: $(PATCHED_ETH_MAC) all
 TOPDIR = ..
 include $(TOPDIR)/pano/make/ise.mk
 
-$(PATCHED_ETH_MAC): ethernet_mac.patch
+$(PATCHED_ETH_MAC): ./patches/ethernet_mac.patch
 	(cd $(CORES_DIR)/ethernet_mac; git reset HEAD --hard)
-	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(PANO_RTL_DIR)/ethernet_mac.patch)
+	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(PANO_RTL_DIR)/patches/ethernet_mac.patch)
 	touch $@
 
 firmware.mem:

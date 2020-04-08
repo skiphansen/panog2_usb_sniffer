@@ -158,6 +158,22 @@ Another RX frame is waiting
 0xdc 0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
 ```
 
+## Ethernet Status lights
+
+Note:  The RTL handles Ethernet the link configuration negotiation and it only
+allow full duplex connections at 1000BaseT, 100BaseT and 10BaseT.  MDI/MDIX
+configuration is automatic.  Links WILL NOT be established with half duplex
+hubs/switches (this really shouldn't be an issue).
+
+Looking at the Pano's Ethernet port with the tab up the right LED shows the
+link state
+
+Off - No Link
+Green - 10BaseT connection
+Green/Amber - 100BaseT connection
+Amber - 1000BaseT connection
+
+
 ### Building everything from sources
 
 **NB:** While it may be possible to use Windows for development I haven't 

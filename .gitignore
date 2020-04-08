@@ -3,7 +3,8 @@
 *.vcd
 *.a
 *_bd.bmm
-.platform
+*.lst
+fw/lwip/
 build/
 lib/
 obj/
