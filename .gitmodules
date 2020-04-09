@@ -13,6 +13,3 @@
 [submodule "cores/ethernet_mac"]
 	path = cores/ethernet_mac
 	url = https://github.com/yol/ethernet_mac.git
-[submodule "fw/lwip"]
-	path = fw/lwip
-	url = git://git.savannah.gnu.org/lwip.git
