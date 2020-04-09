@@ -6,6 +6,7 @@ TARGET       = lwip_test
 SRC_DIR      = .
 SRC_DIR     += $(CORES_DIR)/core_soc/src_c
 SRC_DIR     += $(PANO_FW_DIR)/lib/libstd
+EXTRA_SRC   += $(PANO_FW_DIR)/common/log.c
 SRC_DIR	    += ../lwip/src/core
 SRC_DIR	    += ../lwip/src/core/ipv4
 EXTRA_SRC   += ../lwip/src/netif/ethernet.c

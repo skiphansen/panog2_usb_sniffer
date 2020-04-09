@@ -32,6 +32,8 @@
 #ifndef LWIP_LWIPOPTS_H
 #define LWIP_LWIPOPTS_H
 
+#define LWIP_DEBUG   1
+
 #define NO_SYS                          1
 #define NO_SYS_NO_TIMERS                0
 #define LWIP_TIMERS                     1
@@ -43,7 +45,7 @@
 #define MEM_LIBC_MALLOC                 0
 #define MEMP_MEM_MALLOC                 0
 #define MEMP_MEM_INIT                   0
-#define MEM_ALIGNMENT                   1
+#define MEM_ALIGNMENT                   4
 #define MEM_SIZE                        1600
 #define MEMP_OVERFLOW_CHECK             0
 #define MEMP_SANITY_CHECK               0
@@ -318,7 +320,7 @@
 #define UDP_DEBUG                       LWIP_DBG_OFF
 #define TCPIP_DEBUG                     LWIP_DBG_OFF
 #define SLIP_DEBUG                      LWIP_DBG_OFF
-#define DHCP_DEBUG                      LWIP_DBG_OFF
+#define DHCP_DEBUG                      LWIP_DBG_ON
 #define AUTOIP_DEBUG                    LWIP_DBG_OFF
 #define DNS_DEBUG                       LWIP_DBG_OFF
 #define IP6_DEBUG                       LWIP_DBG_OFF
