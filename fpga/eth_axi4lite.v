@@ -32,7 +32,7 @@ module eth_axi4lite
 //-----------------------------------------------------------------
 #(
 // Change this if you like, this was copied from the label on one of Skip's G2s
-    parameter MAC_ADDRESS = 48'h001c02701d5d
+    parameter MAC_ADDRESS = 48'h5d1d70021c00
 )
 //-----------------------------------------------------------------
 // Ports
