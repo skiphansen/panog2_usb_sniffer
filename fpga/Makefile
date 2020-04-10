@@ -61,7 +61,5 @@ $(PATCHED_CPU): $(CPU_PATCH)
 	touch $@
 
 firmware.mem:
-	make -C $(TOPDIR)/fw/imfplay_port init_image
+	make -C $(TOPDIR)/fw/lwip_test init_image
 
-debug:
-	echo "PATCHES_DIR: $(ETHERNET_MAC_PATCH)"

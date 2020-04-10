@@ -100,7 +100,7 @@
 #define IP_SOF_BROADCAST                0
 #define IP_SOF_BROADCAST_RECV           0
 #define IP_FORWARD_ALLOW_TX_ON_RX_NETIF 0
-#define LWIP_ICMP                       0
+#define LWIP_ICMP                       1
 #define ICMP_TTL                        (IP_DEFAULT_TTL)
 #define LWIP_BROADCAST_PING             0
 #define LWIP_MULTICAST_PING             0

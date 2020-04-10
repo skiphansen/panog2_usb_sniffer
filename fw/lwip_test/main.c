@@ -8,7 +8,8 @@
 #include "gpio_defs.h"
 #include "timer.h"
 #include "pano_io.h"
-#define DEBUG_LOGGING   1
+#define DEBUG_LOGGING         1
+#define VERBOSE_DEBUG_LOGGING 1
 #include "log.h"
 #include "eth_io.h"
 
@@ -81,33 +82,33 @@ int main(int argc, char *argv[])
     for(; ; ) {
        NewEthStatus = ETH_STATUS & (ETH_STATUS_LINK_UP | ETH_STATUS_LINK_SPEED);
        if(EthStatus != NewEthStatus) {
-          printf("Ethernet Status: 0x%x\n",ETH_STATUS);
+          LOG_R("Ethernet Status: 0x%x\n",ETH_STATUS);
           EthStatus = NewEthStatus;
-          printf("Link is %s\n",
+          LOG_R("Link is %s\n",
                  (EthStatus & ETH_STATUS_LINK_UP) ? "up" : "down");
-          printf("Link speed: ");
+          LOG_R("Link speed: ");
           switch(EthStatus & ETH_STATUS_LINK_SPEED) {
              case SPEED_1000MBPS:
-                printf("1g");
+                LOG_R("1g");
                 break;
 
              case SPEED_100MBPS:
-                printf("100m");
+                LOG_R("100m");
                 break;
 
              case SPEED_10MBPS:
-                printf("10m");
+                LOG_R("10m");
                 break;
 
              case SPEED_UNSPECIFIED:
-                printf("?");
+                LOG_R("?");
                 break;
 
              default:
-                printf("WTF?");
+                LOG_R("WTF?");
                 break;
           }
-          printf("\n");
+          LOG_R("\n");
           if(EthStatus & ETH_STATUS_LINK_UP) {
              netif_set_link_up(&gNetif);
           }
@@ -183,7 +184,7 @@ void ClearRxFifo()
 void lwip_pano_assert(const char *msg, int line, const char *file);
 void lwip_pano_assert(const char *msg, int line, const char *file)
 {
-   printf("Assertion \"%s\" failed %s#%d\n",msg,file,line);
+   ALOG_R("Assertion \"%s\" failed %s#%d\n",msg,file,line);
    for( ; ; );
 }
 
@@ -213,7 +214,7 @@ err_t pano_netif_init(struct netif *netif);
 
 err_t pano_netif_init(struct netif *netif)
 {
-   ELOG("%s: called\n",__FUNCTION__);
+   VLOG("%s: called\n",__FUNCTION__);
 
    netif->linkoutput = pano_netif_output;
    netif->output     = etharp_output;
@@ -234,19 +235,18 @@ void init_default_netif()
 
    do {
       if(netif_add(&gNetif,IP4_ADDR_ANY,IP4_ADDR_ANY,IP4_ADDR_ANY,NULL,pano_netif_init,netif_input) == NULL) {
-         printf("%s: netif_add failed\n",__FUNCTION__);
+         ELOG("netif_add failed\n");
          break;
       }
       gNetif.name[0] = 'e';
-      gNetif.name[1] = '0';
+      gNetif.name[1] = 't';
       netif_set_default(&gNetif);
       netif_set_up(&gNetif);
       if((Err = dhcp_start(&gNetif)) != ERR_OK) {
-         printf("%s: dhcp_start failed: %d\n",__FUNCTION__,Err);
+         ELOG("dhcp_start failed: %d\n",Err);
          break;
       }
    } while(false);
-   printf("%s: gNetif.output 0x%x\n",__FUNCTION__,gNetif.output);
 }
 
 /**
@@ -272,8 +272,8 @@ err_t pano_netif_output(struct netif *netif, struct pbuf *p)
    struct pbuf *pNext = p->next;
    int i;
 
-   LOG("called tot_len: %d, len: %d: \n",p->tot_len,p->len);
-   LOG_HEX(p->payload,p->len);
+   VLOG("called tot_len: %d, len: %d: \n",p->tot_len,p->len);
+   VLOG_HEX(p->payload,p->len);
 
    ETH_TX = (uint8_t) ((TxLen >> 8) & 0xff);
    ETH_TX = (uint8_t) (TxLen & 0xff);
@@ -334,16 +334,8 @@ void pano_netif_poll()
          }
          cp = (uint8_t *) p->payload;
 
-         printf("%s: Rx #%d: Read %d (0x%x) bytes from Rx Fifo:",
-                __FUNCTION__,gRxCount,Count,Count);
-
-         for(i = 0; i < Count; i++) {
-            if((i & 0xf) == 0) {
-               printf("\n");
-            }
-            printf("0x%02x ",*cp++);
-         }
-         printf("\n");
+         VLOG_R("Rx #%d: Read %d (0x%x) bytes from Rx Fifo:\n",gRxCount,Count,Count);
+         VLOG_HEX(p->payload,p->len);
          if(gNetif.input(p,&gNetif) != ERR_OK) {
            LWIP_DEBUGF(NETIF_DEBUG,("%s: netif input error\n",__FUNCTION__));
            pbuf_free(p);
