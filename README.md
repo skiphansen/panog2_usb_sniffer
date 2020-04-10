@@ -97,9 +97,9 @@ To work around this problem load the bit file, run blinky, hit Ctrl-C and
 then run lwip_test.  Pull requests to fix this bug would be MOST welcome!
 
 ```
-skip@dell-790:~/pano/localref/panog2_usb_sniffer/fw/lwip_test$ (cd ../blinky/;make load;make run)
-make[1]: Entering directory '/home/skip/pano/localref/panog2_usb_sniffer/fpga'
-xc3sprog -c jtaghs2 -v /home/skip/pano/localref/panog2_usb_sniffer/prebuilt/pano-g2.bit
+skip@dell-790:~/pano/working/panog2_usb_sniffer/fw/lwip_test$ (cd ../blinky/;make load;make run)
+make[1]: Entering directory '/home/skip/pano/working/panog2_usb_sniffer/fpga'
+xc3sprog -c jtaghs2 -v /home/skip/pano/working/panog2_usb_sniffer/prebuilt/pano-g2.bit
 XC3SPROG (c) 2004-2011 xc3sprog project $Rev: 774 $ OS: Linux
 Free software: If you contribute nothing, expect nothing!
 Feedback on success/failure/enhancement requests:
@@ -114,42 +114,53 @@ Using Libftdi, Using JTAG frequency   6.000 MHz from undivided clock
 JTAG chainpos: 0 Device IDCODE = 0x3401d093     Desc: XC6SLX150
 Created from NCD file: fpga_routed.ncd;HW_TIMEOUT=FALSE;UserID=0xFFFFFFFF
 Target device: 6slx150fgg484
-Created: 2020/04/08 18:49:21
+Created: 2020/04/10 14:01:34
 Bitstream length: 17921600 bits
 DNA is 0x1927bec012fa2fff
-done. Programming time 3075.8 ms
+done. Programming time 3075.1 ms
 USB transactions: Write 1111 read 14 retries 10
-make[1]: Leaving directory '/home/skip/pano/localref/panog2_usb_sniffer/fpga'
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/run.py -d /dev/ttyUSB.Pano -b 1000000 -f  build/blinky
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -a 0xF0000000 -v 0x0
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/load.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -f build/blinky -p ''
+make[1]: Leaving directory '/home/skip/pano/working/panog2_usb_sniffer/fpga'
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/run.py -d /dev/ttyUSB.Pano -b 1000000 -f  build/blinky
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -a 0xF0000000 -v 0x0
+Traceback (most recent call last):
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py", line 28, in <module>
+    main(sys.argv[1:])
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py", line 25, in main
+    bus_if.write32(addr, value)
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/bus_interface.py", line 61, in write32
+    return self.bus.write32(addr, value)
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/uart_bus_interface.py", line 78, in write32
+    self.connect()
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/uart_bus_interface.py", line 44, in connect
+    raise Exception("Target not responding correctly, check interface / baud rate...")
+Exception: Target not responding correctly, check interface / baud rate...
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/load.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -f build/blinky -p ''
 ELF: Loading 0x0 - size 9KB
  |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX| 100.0%
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py -t uart -d /dev/ttyUSB.Pano -b 1000000
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py -t uart -d /dev/ttyUSB.Pano -b 1000000
 Traceback (most recent call last):
-  File "/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py", line 50, in <module>
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py", line 50, in <module>
     main(sys.argv[1:])
-  File "/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py", line 44, in main
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py", line 44, in main
     ch = stdio_read()
-  File "/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/stdio.py", line 32, in stdio_read
+  File "/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/stdio.py", line 32, in stdio_read
     ch = os.read(sys.stdin.fileno(), 1)
 KeyboardInterrupt
 
-skip@dell-790:~/pano/localref/panog2_usb_sniffer/fw/lwip_test$ make run
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/run.py -d /dev/ttyUSB.Pano -b 1000000 -f  build/lwip_test
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -a 0xF0000000 -v 0x0
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/load.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -f build/lwip_test -p ''
-ELF: Loading 0x0 - size 60KB
+skip@dell-790:~/pano/working/panog2_usb_sniffer/fw/lwip_test$ make run
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/run.py -d /dev/ttyUSB.Pano -b 1000000 -f  build/lwip_test
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/poke.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -a 0xF0000000 -v 0x0
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/load.py -t uart -d /dev/ttyUSB.Pano -b 1000000 -f build/lwip_test -p ''
+ELF: Loading 0x0 - size 61KB
  |XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX| 100.0%
-/home/skip/pano/localref/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py -t uart -d /dev/ttyUSB.Pano -b 1000000
+/home/skip/pano/working/panog2_usb_sniffer/pano/tools/dbg_bridge/console-uart.py -t uart -d /dev/ttyUSB.Pano -b 1000000
 Hello pano world!
 pano_netif_init: pano_netif_init: called
-dhcp_start(netif=ef98) e0u
+dhcp_start(netif=f528) et0
 dhcp_start(): mallocing new DHCP client
 dhcp_start(): allocated dhcpdhcp_start(): starting DHCP configuration
-init_default_netif: gNetif.output 0xa454
 ClearRxFifo: Clearing Rx FIFO
-ClearRxFifo: FIFO cleared after 186 reads
+ClearRxFifo: FIFO cleared after 310 reads
 Ethernet Status: 0xa4
 Link is up
 Link speed: 1g
@@ -182,40 +193,40 @@ dc 37 03 01 03 1c ff 00 00 00 00 00 00 00 00 00
 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 dhcp_discover: deleting()
 dhcp_discover: SELECTING
-dhcp_discover(): set request timeout u msecs
-pano_netif_poll: Rx #1: Read 342 (0x156) bytes from Rx Fifo:
-0x00 0x1c 0x02 0x70 0x1d 0x5d 0x4c 0xe6 0x76 0x3e 0xf3 0x1a 0x08 0x00 0x45 0x00
-0x01 0x48 0xf6 0x68 0x00 0x00 0x40 0x11 0x0b 0x79 0xc0 0xa8 0x7b 0x01 0xc0 0xa8
-0x7b 0x71 0x00 0x43 0x00 0x44 0x01 0x34 0x08 0x5c 0x02 0x01 0x06 0x00 0x04 0x08
-0x06 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xc0 0xa8 0x7b 0x71 0xc0 0xa8
-0x7b 0x01 0x00 0x00 0x00 0x00 0x00 0x1c 0x02 0x70 0x1d 0x5d 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x63 0x82 0x53 0x63 0x35 0x01 0x02 0x36 0x04 0xc0
-0xa8 0x7b 0x01 0x33 0x04 0x00 0x00 0xa8 0xc0 0x3a 0x04 0x00 0x00 0x54 0x60 0x3b
-0x04 0x00 0x00 0x93 0xa8 0x01 0x04 0xff 0xff 0xff 0x00 0x1c 0x04 0xc0 0xa8 0x7b
-0xff 0x03 0x04 0xc0 0xa8 0x7b 0x01 0xff 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00
-dhcp_recv(pbuf = 11960) from DHCP server u.u.u.u port u
-pbuf->len = u
-pbuf->tot_len = u
-skipping option u in options
+dhcp_discover(): set request timeout 2000 msecs
+Rx #1: Read 342 (0x156) bytes from Rx Fifo:
+00 1c 02 70 1d 5d 4c e6 76 3e f3 1a 08 00 45 00
+01 48 f6 b1 00 00 40 11 0b 30 c0 a8 7b 01 c0 a8
+7b 71 00 43 00 44 01 34 08 5c 02 01 06 00 04 08
+06 01 00 00 00 00 00 00 00 00 c0 a8 7b 71 c0 a8
+7b 01 00 00 00 00 00 1c 02 70 1d 5d 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 63 82 53 63 35 01 02 36 04 c0
+a8 7b 01 33 04 00 00 a8 c0 3a 04 00 00 54 60 3b
+04 00 00 93 a8 01 04 ff ff ff 00 1c 04 c0 a8 7b
+ff 03 04 c0 a8 7b 01 ff 00 00 00 00 00 00 00 00
+00 00 00 00 00 00
+dhcp_recv(pbuf = 11ef0) from DHCP server 192.168.123.1 port 67
+pbuf->len = 300
+pbuf->tot_len = 300
+skipping option 28 in options
 searching DHCP_OPTION_MESSAGE_TYPE
 DHCP_OFFER received in DHCP_STATE_SELECTING state
-dhcp_handle_offer(netif=ef98) e0u
+dhcp_handle_offer(netif=f528) et0
 dhcp_handle_offer(): server 0x017ba8c0
 dhcp_handle_offer(): offer for 0x717ba8c0
-dhcp_select(netif=ef98) e0u
+dhcp_select(netif=f528) et0
 transaction id xid(4080601)
 pano_netif_output: called tot_len: 350, len: 350:
 ff ff ff ff ff ff 00 1c 02 70 1d 5d 08 00 45 00
@@ -241,44 +252,53 @@ dc 32 04 c0 a8 7b 71 36 04 c0 a8 7b 01 37 03 01
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 dhcp_select: REQUESTING
-dhcp_select(): set request timeout u msecs
-pano_netif_poll: Rx #2: Read 342 (0x156) bytes from Rx Fifo:
-0x00 0x1c 0x02 0x70 0x1d 0x5d 0x4c 0xe6 0x76 0x3e 0xf3 0x1a 0x08 0x00 0x45 0x00
-0x01 0x48 0xf6 0x69 0x00 0x00 0x40 0x11 0x0b 0x78 0xc0 0xa8 0x7b 0x01 0xc0 0xa8
-0x7b 0x71 0x00 0x43 0x00 0x44 0x01 0x34 0x05 0x5c 0x02 0x01 0x06 0x00 0x04 0x08
-0x06 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xc0 0xa8 0x7b 0x71 0xc0 0xa8
-0x7b 0x01 0x00 0x00 0x00 0x00 0x00 0x1c 0x02 0x70 0x1d 0x5d 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00 0x63 0x82 0x53 0x63 0x35 0x01 0x05 0x36 0x04 0xc0
-0xa8 0x7b 0x01 0x33 0x04 0x00 0x00 0xa8 0xc0 0x3a 0x04 0x00 0x00 0x54 0x60 0x3b
-0x04 0x00 0x00 0x93 0xa8 0x01 0x04 0xff 0xff 0xff 0x00 0x1c 0x04 0xc0 0xa8 0x7b
-0xff 0x03 0x04 0xc0 0xa8 0x7b 0x01 0xff 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
-0x00 0x00 0x00 0x00 0x00 0x00
-dhcp_recv(pbuf = 11960) from DHCP server u.u.u.u port u
-pbuf->len = u
-pbuf->tot_len = u
-skipping option u in options
+dhcp_select(): set request timeout 2000 msecs
+Rx #2: Read 342 (0x156) bytes from Rx Fifo:
+00 1c 02 70 1d 5d 4c e6 76 3e f3 1a 08 00 45 00
+01 48 f6 b2 00 00 40 11 0b 2f c0 a8 7b 01 c0 a8
+7b 71 00 43 00 44 01 34 05 5c 02 01 06 00 04 08
+06 01 00 00 00 00 00 00 00 00 c0 a8 7b 71 c0 a8
+7b 01 00 00 00 00 00 1c 02 70 1d 5d 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 63 82 53 63 35 01 05 36 04 c0
+a8 7b 01 33 04 00 00 a8 c0 3a 04 00 00 54 60 3b
+04 00 00 93 a8 01 04 ff ff ff 00 1c 04 c0 a8 7b
+ff 03 04 c0 a8 7b 01 ff 00 00 00 00 00 00 00 00
+00 00 00 00 00 00
+dhcp_recv(pbuf = 11ef0) from DHCP server 192.168.123.1 port 67
+pbuf->len = 300
+pbuf->tot_len = 300
+skipping option 28 in options
 searching DHCP_OPTION_MESSAGE_TYPE
 DHCP_ACK received
-dhcp_bind(netif=ef98) e0u
-dhcp_bind(): t0 renewal timer  secs
-dhcp_bind(): set request timeout  msecs
-dhcp_bind(): t1 renewal timer  secs
-dhcp_bind(): set request timeout  msecs
-dhcp_bind(): t2 rebind timer  secs
-dhcp_bind(): set request timeout  msecs
+dhcp_bind(netif=f528) et0
+dhcp_bind(): t0 renewal timer 43200 secs
+dhcp_bind(): set request timeout 43200000 msecs
+dhcp_bind(): t1 renewal timer 21600 secs
+dhcp_bind(): set request timeout 21600000 msecs
+dhcp_bind(): t2 rebind timer 37800 secs
+dhcp_bind(): set request timeout 37800000 msecs
 dhcp_bind(): IP: 0x717ba8c0 SN: 0x00ffffff GW: 0x017ba8c0
+pano_netif_output: called tot_len: 42, len: 42:
+ff ff ff ff ff ff 00 1c 02 70 1d 5d 08 06 00 01
+08 00 06 04 00 01 00 1c 02 70 1d 5d c0 a8 7b 71
+00 00 00 00 00 00 c0 a8 7b 71
+Rx #3: Read 60 (0x3c) bytes from Rx Fifo:
+ff ff ff ff ff ff 00 00 00 00 00 00 88 99 03 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00
 ```
 
 ## Ethernet Status lights
