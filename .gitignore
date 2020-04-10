@@ -4,7 +4,6 @@
 *.a
 *_bd.bmm
 *.lst
-fw/lwip/
 build/
 lib/
 obj/
