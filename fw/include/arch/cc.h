@@ -84,5 +84,21 @@ typedef struct sio_status_s sio_status_t;
 #define sio_fd_t sio_status_t*
 #define __sio_fd_t_defined
 
+/** Define this to 1 in arch/cc.h of your port if your compiler does not provide
+ * the inttypes.h header. You need to define the format strings listed in
+ * lwip/arch.h yourself in this case (X8_F, U16_F...).
+ */
+#define LWIP_NO_INTTYPES_H 1
+
+/* The following are needed beause we're using a simplified (small) printf */
+#define X8_F  "x"
+#define U16_F "d"
+#define S16_F "d"
+#define X16_F "x"
+#define U32_F "d"
+#define S32_F "d"
+#define X32_F "x"
+#define SZT_F "p"
+
 
 #endif /* LWIP_ARCH_CC_H */

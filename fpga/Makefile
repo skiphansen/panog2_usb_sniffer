@@ -37,18 +37,31 @@ MAP_CMDS = -w -intstyle ise -detail -ir off -ignore_keep_hierarchy -timing -ol h
 # use 4 cores
 PAR_CMDS = -w -intstyle ise -ol high  -mt 4
 
-PATCHED_ETH_MAC = ../cores/ethernet_mac/.patched
+PATCHED_ETH_MAC = $(CORES_DIR)/ethernet_mac/.patched
+PATCHED_CPU = $(CORES_DIR)/cpu/riscv/.patched
 
 .PHONY: init_and_build
-init_and_build: $(PATCHED_ETH_MAC) all
+init_and_build: $(PATCHED_ETH_MAC) $(PATCHED_CPU) all
 
 TOPDIR = ..
 include $(TOPDIR)/pano/make/ise.mk
 
-$(PATCHED_ETH_MAC): ./patches/ethernet_mac.patch
+ETHERNET_MAC_PATCH := $(PATCHES_DIR)/cores/ethernet_mac/0001-BUFGMUX-routing-fix.patch
+
+$(PATCHED_ETH_MAC): $(ETHERNET_MAC_PATCH)
 	(cd $(CORES_DIR)/ethernet_mac; git reset HEAD --hard)
-	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(PANO_RTL_DIR)/patches/ethernet_mac.patch)
+	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(ETHERNET_MAC_PATCH))
+	touch $@
+
+CPU_PATCH := $(PATCHES_DIR)/cores/cpu/riscv/0001-Increase-on-chip-RAM-to-128k.patch
+
+$(PATCHED_CPU): $(CPU_PATCH)
+	(cd $(CORES_DIR)/cpu/riscv; git reset HEAD --hard)
+	(cd $(CORES_DIR)/cpu/riscv; patch -p1 < $(CPU_PATCH))
 	touch $@
 
 firmware.mem:
 	make -C $(TOPDIR)/fw/imfplay_port init_image
+
+debug:
+	echo "PATCHES_DIR: $(ETHERNET_MAC_PATCH)"
