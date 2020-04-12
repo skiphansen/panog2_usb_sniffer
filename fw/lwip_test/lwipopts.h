@@ -55,7 +55,7 @@
 #define MEM_USE_POOLS_TRY_BIGGER_POOL   0
 #define MEMP_USE_CUSTOM_POOLS           0
 #define LWIP_ALLOW_MEM_FREE_FROM_OTHER_CONTEXT 0
-/*#define MEMP_NUM_PBUF                   16
+#define MEMP_NUM_PBUF                   16
 #define MEMP_NUM_RAW_PCB                4
 #define MEMP_NUM_UDP_PCB                4
 #define MEMP_NUM_TCP_PCB                5
@@ -78,7 +78,7 @@
 #define MEMP_NUM_API_MSG                MEMP_NUM_TCPIP_MSG_API
 #define MEMP_NUM_DNS_API_MSG            MEMP_NUM_TCPIP_MSG_API
 #define MEMP_NUM_SOCKET_SETGETSOCKOPT_DATA MEMP_NUM_TCPIP_MSG_API
-#define MEMP_NUM_NETIFAPI_MSG           MEMP_NUM_TCPIP_MSG_API*/
+#define MEMP_NUM_NETIFAPI_MSG           MEMP_NUM_TCPIP_MSG_API
 #define LWIP_ARP                        1
 #define ARP_TABLE_SIZE                  10
 #define ARP_MAXAGE                      300
@@ -132,7 +132,7 @@
 #define LWIP_UDPLITE                    0
 #define UDP_TTL                         (IP_DEFAULT_TTL)
 #define LWIP_NETBUF_RECVINFO            0
-#define LWIP_TCP                        0
+#define LWIP_TCP                        1
 #define TCP_TTL                         (IP_DEFAULT_TTL)
 #define TCP_WND                         (4 * TCP_MSS)
 #define TCP_MAXRTX                      12
@@ -167,7 +167,7 @@
 #define PBUF_POOL_BUFSIZE               LWIP_MEM_ALIGN_SIZE(TCP_MSS+40+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
 #define LWIP_PBUF_REF_T                 u8_t
 #define LWIP_SINGLE_NETIF               0
-#define LWIP_NETIF_HOSTNAME             0
+#define LWIP_NETIF_HOSTNAME             1
 #define LWIP_NETIF_API                  0
 #define LWIP_NETIF_STATUS_CALLBACK      0
 #define LWIP_NETIF_EXT_STATUS_CALLBACK  0

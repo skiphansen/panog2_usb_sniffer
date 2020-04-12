@@ -8,7 +8,8 @@ SRC_DIR     += $(CORES_DIR)/core_soc/src_c
 SRC_DIR     += $(PANO_FW_DIR)/lib/libstd
 EXTRA_SRC   += $(PANO_FW_DIR)/common/log.c
 
-PROJECT_INC  := $(abspath ../include)
+PROJECT_DIR  := $(abspath .)
+INCLUDE_PATH += ../include
 INCLUDE_PATH += $(PROJECT_INC)
 INCLUDE_PATH += $(PANO_FW_DIR)/common
 
