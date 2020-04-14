@@ -8,8 +8,8 @@ NET "SYSCLK" PERIOD = 125 MHz HIGH 50% | LOC = "Y13";
 #NET "flash_so_i"  LOC="AA20" | IOSTANDARD=LVCMOS33;
 
 # serial cable connected to mini HDMI DDC signals
-NET "uart_txd_i"  LOC="AA21" | IOSTANDARD=LVTTL;        # AKA DDC2_SCK
-NET "uart_rxd_o"  LOC="AB19" | IOSTANDARD=LVTTL;        # AKA DDC2_SDA
+NET "uart_txd_i"  LOC="AA21" | IOSTANDARD=LVTTL;        # AKA DDC2_SCK (PC->Pano)
+NET "uart_rxd_o"  LOC="AB19" | IOSTANDARD=LVTTL;        # AKA DDC2_SDA (Pano->PC)
 
 ############################################################################
 # ULPI Interface

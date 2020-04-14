@@ -106,10 +106,12 @@ u_rst
 wire        dbg_txd_w;
 wire        uart_txd_w;
 
+`ifdef PERIPH_SPILITE
 wire        spi_clk_w;
 wire        spi_so_w;
 wire        spi_si_w;
 wire [7:0]  spi_cs_w;
+`endif
 
 wire [31:0] gpio_in_w;
 wire [31:0] gpio_out_w;
@@ -135,11 +137,12 @@ u_top
     ,.uart_tx_o(uart_txd_w)
     ,.uart_rx_i(uart_txd_i)
 
+`ifdef PERIPH_SPILITE
     ,.spi_clk_o(spi_clk_w)
     ,.spi_mosi_o(spi_si_w)
     ,.spi_miso_i(spi_so_w)
     ,.spi_cs_o(spi_cs_w)
-
+`endif
     ,.gpio_input_i(gpio_in_w)
     ,.gpio_output_o(gpio_out_w)
     ,.gpio_output_enable_o(gpio_out_en_w)

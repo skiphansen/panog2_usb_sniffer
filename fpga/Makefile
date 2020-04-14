@@ -15,12 +15,15 @@ SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
 SRC_DIR      += $(CORES_DIR)/ethernet_mac
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
+#SRC_DIR	     += ${CORES_DIR}/cores/ulpi_wrapper/rtl
+#SRC_DIR	     += ${CORES_DIR}/cores/usb_sniffer/rtl
 
 EXTRA_VFLAGS += CPU_SELECT_RISCV=1
 
 # EXCLUDE_SRC - list of core files with local replacements
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/axi4lite_dist.v
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
+EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/spi_lite.v
 EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
 
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog

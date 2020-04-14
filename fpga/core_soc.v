@@ -57,7 +57,9 @@ module core_soc
     ,input           inport_arvalid_i
     ,input  [ 31:0]  inport_araddr_i
     ,input           inport_rready_i
+`ifdef PERIPH_SPILITE
     ,input           spi_miso_i
+`endif
     ,input           uart_rx_i
     ,input  [ 31:0]  gpio_input_i
 
@@ -71,9 +73,12 @@ module core_soc
     ,output          inport_rvalid_o
     ,output [ 31:0]  inport_rdata_o
     ,output [  1:0]  inport_rresp_o
+`ifdef PERIPH_SPILITE
     ,output          spi_clk_o
     ,output          spi_mosi_o
     ,output [  7:0]  spi_cs_o
+`endif
+
     ,output          uart_tx_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
@@ -444,7 +449,7 @@ u_timer
     ,.intr_o(interrupt0_w)
 );
 
-
+`ifdef PERIPH_SPI_LITE
 spi_lite
 #(
      .C_SCK_RATIO(C_SCK_RATIO)
@@ -479,6 +484,7 @@ u_spi
     ,.spi_cs_o(spi_cs_o)
     ,.intr_o(interrupt2_w)
 );
+`endif
 
 
 gpio
