@@ -10,3 +10,6 @@
 [submodule "cores/ethernet_mac"]
 	path = cores/ethernet_mac
 	url = https://github.com/yol/ethernet_mac.git
+[submodule "cores/cpu/riscv"]
+	path = cores/cpu/riscv
+	url = https://github.com/ultraembedded/riscv
