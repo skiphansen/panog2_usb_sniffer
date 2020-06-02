@@ -4,17 +4,14 @@
 include ../project.mk
 CPU        ?= riscv
 
-# Choice: [rv32i, rv32i_spartan6, rv32im, rv32imsu]
-RISCV_CORE  ?= rv32i_spartan6
-
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v
 SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
-SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/$(RISCV_CORE)
+SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/riscv
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
-SRC_DIR      += $(CORES_DIR)/ethernet_mac
-SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
-SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
+#SRC_DIR      += $(CORES_DIR)/ethernet_mac
+#SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
+#SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
 
 EXTRA_VFLAGS += CPU_SELECT_RISCV=1
 
