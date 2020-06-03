@@ -402,7 +402,7 @@ u_soc
 reg bridge_rst_enable;
 reg rst_cpu_r;
 
-always @(posedge clk_i) 
+always @(posedge clk_i or posedge rst_i) 
     if (rst_i) begin
         bridge_rst_enable <= 0;
         rst_cpu_r <= 1;
@@ -420,6 +420,5 @@ always @(posedge clk_i)
 
 assign rst_cpu_w       = rst_cpu_r;
 assign cpu_intr_w      = {31'b0, soc_intr_w};
-
 
 endmodule

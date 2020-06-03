@@ -28,9 +28,7 @@
 // USA
 //-----------------------------------------------------------------
 
-//-----------------------------------------------------------------
-//                          Generated File
-//-----------------------------------------------------------------
+`define INCLUDE_ETHERNET    1
 
 module core_soc
 //-----------------------------------------------------------------
@@ -372,7 +370,6 @@ u_dist
     ,.outport4_araddr_o(periph4_araddr_w)
     ,.outport4_rready_o(periph4_rready_w)
 `ifdef INCLUDE_ETHERNET
-
     ,.outport5_awvalid_o(periph5_awvalid_w)
     ,.outport5_awaddr_o(periph5_awaddr_w)
     ,.outport5_wvalid_o(periph5_wvalid_w)
