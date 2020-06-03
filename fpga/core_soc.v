@@ -28,9 +28,7 @@
 // USA
 //-----------------------------------------------------------------
 
-//-----------------------------------------------------------------
-//                          Generated File
-//-----------------------------------------------------------------
+`define INCLUDE_ETHERNET    1
 
 module core_soc
 //-----------------------------------------------------------------
@@ -204,6 +202,7 @@ wire           periph4_wready_w;
 wire  [  3:0]  periph4_wstrb_w;
 wire           periph4_wvalid_w;
 
+`ifdef INCLUDE_ETHERNET
 wire  [ 31:0]  periph5_araddr_w;
 wire           periph5_arready_w;
 wire           periph5_arvalid_w;
@@ -221,6 +220,7 @@ wire  [ 31:0]  periph5_wdata_w;
 wire           periph5_wready_w;
 wire  [  3:0]  periph5_wstrb_w;
 wire           periph5_wvalid_w;
+`endif
 
 irq_ctrl
 u_intc
@@ -374,6 +374,7 @@ u_dist
     ,.outport4_arvalid_o(periph4_arvalid_w)
     ,.outport4_araddr_o(periph4_araddr_w)
     ,.outport4_rready_o(periph4_rready_w)
+`ifdef INCLUDE_ETHERNET
     ,.outport5_awvalid_o(periph5_awvalid_w)
     ,.outport5_awaddr_o(periph5_awaddr_w)
     ,.outport5_wvalid_o(periph5_wvalid_w)
@@ -383,6 +384,7 @@ u_dist
     ,.outport5_arvalid_o(periph5_arvalid_w)
     ,.outport5_araddr_o(periph5_araddr_w)
     ,.outport5_rready_o(periph5_rready_w)
+`endif
 );
 
 
@@ -519,6 +521,7 @@ u_gpio
 );
 
 
+`ifdef INCLUDE_ETHERNET
 eth_axi4lite u_eth (
       // axi4lite Inputs
     .clk_i(clk_i)
@@ -568,5 +571,6 @@ eth_axi4lite u_eth (
     ,.mdc_o(mdc_o)
     ,.mdio_io(mdio_io)
 );
+`endif
 
 endmodule

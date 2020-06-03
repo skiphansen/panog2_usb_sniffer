@@ -4,18 +4,12 @@
 [submodule "cores/dbg_bridge"]
 	path = cores/dbg_bridge
 	url = https://github.com/ultraembedded/core_dbg_bridge.git
-[submodule "cores/cpu/riscv"]
-	path = cores/cpu/riscv
-	url = https://github.com/ultraembedded/riscv.git
 [submodule "pano"]
 	path = pano
 	url = https://github.com/skiphansen/pano_blocks
 [submodule "cores/ethernet_mac"]
 	path = cores/ethernet_mac
 	url = https://github.com/yol/ethernet_mac.git
-[submodule "cores/wb2axip"]
-	path = cores/wb2axip
-	url = https://github.com/ZipCPU/wb2axip.git
-[submodule "cores/cores"]
-	path = cores/cores
-	url = https://github.com/ultraembedded/cores
+[submodule "cores/cpu/riscv"]
+	path = cores/cpu/riscv
+	url = https://github.com/ultraembedded/riscv

@@ -4,13 +4,10 @@
 include ../project.mk
 CPU        ?= riscv
 
-# Choice: [rv32i, rv32i_spartan6, rv32im, rv32imsu]
-RISCV_CORE  ?= rv32i_spartan6
-
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v
 SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
-SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/$(RISCV_CORE)
+SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/riscv
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
 SRC_DIR      += $(CORES_DIR)/ethernet_mac
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
@@ -56,12 +53,18 @@ $(PATCHED_ETH_MAC): $(ETHERNET_MAC_PATCH)
 	(cd $(CORES_DIR)/ethernet_mac; patch -p1 < $(ETHERNET_MAC_PATCH))
 	touch $@
 
-CPU_PATCH := $(PATCHES_DIR)/cores/cpu/riscv/0001-Increase-on-chip-RAM-to-128k.patch
+CPU_PATCH_DIR := $(PATCHES_DIR)/cores/cpu/riscv
+CPU_PATCHES   := $(wildcard $(CPU_PATCH_DIR)/*.patch)
 
-$(PATCHED_CPU): $(CPU_PATCH)
+$(PATCHED_CPU): $(CPU_PATCHES)
 	(cd $(CORES_DIR)/cpu/riscv; git reset HEAD --hard)
-	(cd $(CORES_DIR)/cpu/riscv; patch -p1 < $(CPU_PATCH))
+	(cd $(CORES_DIR)/cpu/riscv;	\
+	$(foreach _patch,$(CPU_PATCHES), patch -p1 < $(_patch);))
 	touch $@
+
+debug:
+	echo "PATCHED_CPU: $(PATCHED_CPU)"
+	echo "CPU_PATCH_DIR $(CPU_PATCH_DIR)"
 
 firmware.mem:
 	make -C $(TOPDIR)/fw/lwip_test init_image
