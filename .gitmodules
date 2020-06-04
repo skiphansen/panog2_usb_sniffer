@@ -13,3 +13,6 @@
 [submodule "cores/cpu/riscv"]
 	path = cores/cpu/riscv
 	url = https://github.com/ultraembedded/riscv
+[submodule "cores/core_usb_sniffer"]
+	path = cores/core_usb_sniffer
+	url = https://github.com/ultraembedded/core_usb_sniffer.git

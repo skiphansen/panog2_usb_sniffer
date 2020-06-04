@@ -2,26 +2,30 @@
 ## Makefile
 ###############################################################################
 include ../project.mk
-CPU        ?= riscv
+
+INCLUDE_ETHERNET ?= n
 
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v
 SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/riscv
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
+SRC_DIR      += $(CORES_DIR)/cores/ulpi_wrapper/rtl
+SRC_DIR      += $(CORES_DIR)/core_usb_sniffer/src_v
+
+ifeq ($(INCLUDE_ETHERNET),y)
 SRC_DIR      += $(CORES_DIR)/ethernet_mac
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
-#SRC_DIR	     += ${CORES_DIR}/cores/ulpi_wrapper/rtl
-#SRC_DIR	     += ${CORES_DIR}/cores/usb_sniffer/rtl
-
-EXTRA_VFLAGS += CPU_SELECT_RISCV=1
+SRC_DIR      += $(PANO_CORES_DIR)/g2/ethernet_mac
+EXCLUDE_SRC  += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
+EXTRA_VFLAGS += INCUDE_ETHERNET=1
+else
+EXCLUDE_SRC += $(abspath ./eth_axi4lite.v)
+endif
 
 # EXCLUDE_SRC - list of core files with local replacements
-EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/axi4lite_dist.v
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
-EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/spi_lite.v
-EXCLUDE_SRC += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
 
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog
 
@@ -57,15 +61,13 @@ CPU_PATCH_DIR := $(PATCHES_DIR)/cores/cpu/riscv
 CPU_PATCHES   := $(wildcard $(CPU_PATCH_DIR)/*.patch)
 
 $(PATCHED_CPU): $(CPU_PATCHES)
-	(cd $(CORES_DIR)/cpu/riscv; git reset HEAD --hard)
-	(cd $(CORES_DIR)/cpu/riscv;	\
+	(cd $(CORES_DIR)/cpu/riscv; git reset HEAD --hard; \
 	$(foreach _patch,$(CPU_PATCHES), patch -p1 < $(_patch);))
 	touch $@
-
-debug:
-	echo "PATCHED_CPU: $(PATCHED_CPU)"
-	echo "CPU_PATCH_DIR $(CPU_PATCH_DIR)"
 
 firmware.mem:
 	make -C $(TOPDIR)/fw/lwip_test init_image
 
+debug:
+	echo "EXCLUDE_SRC: $(EXCLUDE_SRC)"
+	echo "VERILOG_SRCS: $(VERILOG_SRCS)"

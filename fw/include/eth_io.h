@@ -1,7 +1,6 @@
 #ifndef _ETH_IO_H_
 #define _ETH_IO_H_
 
-#define ETH_BASE              0x95000000
 #define ETH_RX_OFFSET         0x0
 #define ETH_TX_OFFSET         0x4
 #define ETH_STATUS_OFFSET     0x8

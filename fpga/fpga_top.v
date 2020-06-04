@@ -51,25 +51,21 @@ module fpga_top
      input           clk_i
     ,input           rst_i
     ,input           dbg_txd_i
-`ifdef PERIPH_SPILITE
     ,input           spi_miso_i
-`endif
     ,input           uart_rx_i
     ,input  [ 31:0]  gpio_input_i
     ,input           clock_125_i
 
     // Outputs
     ,output          dbg_rxd_o
-`ifdef PERIPH_SPILITE
     ,output          spi_clk_o
     ,output          spi_mosi_o
     ,output [  7:0]  spi_cs_o
-`endif
     ,output          uart_tx_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
 
-
+`ifdef INCLUDE_ETHERNET
      // MII (Media-independent interface)
      ,input         mii_tx_clk_i
      ,output        mii_tx_er_o
@@ -90,6 +86,23 @@ module fpga_top
  // MII Management Interface
      ,output        mdc_o
      ,inout         mdio_io
+`endif
+     
+// UTMI Interface
+    ,input  [  7:0]  utmi_data_out_i
+    ,input  [  7:0]  utmi_data_in_i
+    ,input           utmi_txvalid_i
+    ,input           utmi_txready_i
+    ,input           utmi_rxvalid_i
+    ,input           utmi_rxactive_i
+    ,input           utmi_rxerror_i
+    ,input  [  1:0]  utmi_linestate_i
+
+    ,output [  1:0]  utmi_op_mode_o
+    ,output [  1:0]  utmi_xcvrselect_o
+    ,output          utmi_termselect_o
+    ,output          utmi_dppulldown_o
+    ,output          utmi_dmpulldown_o
 );
 
 wire  [  3:0]  axi_t_awid_w;
@@ -355,9 +368,7 @@ u_soc
     ,.inport_arvalid_i(axi_l_arvalid_w)
     ,.inport_araddr_i(axi_l_araddr_w)
     ,.inport_rready_i(axi_l_rready_w)
-`ifdef PERIPH_SPILITE
     ,.spi_miso_i(spi_miso_i)
-`endif
     ,.uart_rx_i(uart_rx_i)
     ,.gpio_input_i(gpio_input_i)
 
@@ -371,17 +382,16 @@ u_soc
     ,.inport_rvalid_o(axi_l_rvalid_w)
     ,.inport_rdata_o(axi_l_rdata_w)
     ,.inport_rresp_o(axi_l_rresp_w)
-`ifdef PERIPH_SPILITE
     ,.spi_clk_o(spi_clk_o)
     ,.spi_mosi_o(spi_mosi_o)
     ,.spi_cs_o(spi_cs_o)
-`endif
     ,.uart_tx_o(uart_tx_o)
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
 
 // Ethernet connections -------
      ,.clock_125_i(clock_125_i)
+`ifdef INCLUDE_ETHERNET
 
      // MII (Media-independent interface)
      ,.mii_tx_clk_i(mii_tx_clk_i)
@@ -402,6 +412,22 @@ u_soc
 // MII Management Interface
      ,.mdc_o(mdc_o)
      ,.mdio_io(mdio_io)
+`endif
+
+// UTMI Interface
+    ,.utmi_data_out_i(utmi_data_out_i)
+    ,.utmi_data_in_i(utmi_data_in_i)
+    ,.utmi_txvalid_i(utmi_txvalid_i)
+    ,.utmi_txready_i(utmi_txready_i)
+    ,.utmi_rxvalid_i(utmi_rxvalid_i)
+    ,.utmi_rxactive_i(utmi_rxactive_i)
+    ,.utmi_rxerror_i(utmi_rxerror_i)
+    ,.utmi_linestate_i(utmi_linestate_i)
+     ,.utmi_op_mode_o(utmi_op_mode_o)
+     ,.utmi_xcvrselect_o(utmi_xcvrselect_o)
+     ,.utmi_termselect_o(utmi_termselect_o)
+     ,.utmi_dppulldown_o(utmi_dppulldown_o)
+     ,.utmi_dmpulldown_o(utmi_dmpulldown_o)
 );
 
 

@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------
 //                     Basic Peripheral SoC
-//                           V1.0
+//                           V1.1
 //                     Ultra-Embedded.com
-//                     Copyright 2014-2019
+//                     Copyright 2014-2020
 //
 //                 Email: admin@ultra-embedded.com
 //
@@ -28,7 +28,7 @@
 // USA
 //-----------------------------------------------------------------
 
-`define INCLUDE_ETHERNET    1
+`define PERIPH_USB_SNIFFER  1
 
 module core_soc
 //-----------------------------------------------------------------
@@ -55,11 +55,36 @@ module core_soc
     ,input           inport_arvalid_i
     ,input  [ 31:0]  inport_araddr_i
     ,input           inport_rready_i
-`ifdef PERIPH_SPILITE
     ,input           spi_miso_i
-`endif
     ,input           uart_rx_i
     ,input  [ 31:0]  gpio_input_i
+    // ,input           ext1_cfg_awready_i
+    // ,input           ext1_cfg_wready_i
+    // ,input           ext1_cfg_bvalid_i
+    // ,input  [  1:0]  ext1_cfg_bresp_i
+    // ,input           ext1_cfg_arready_i
+    // ,input           ext1_cfg_rvalid_i
+    // ,input  [ 31:0]  ext1_cfg_rdata_i
+    // ,input  [  1:0]  ext1_cfg_rresp_i
+    // ,input           ext1_irq_i
+    // ,input           ext2_cfg_awready_i
+    // ,input           ext2_cfg_wready_i
+    // ,input           ext2_cfg_bvalid_i
+    // ,input  [  1:0]  ext2_cfg_bresp_i
+    // ,input           ext2_cfg_arready_i
+    // ,input           ext2_cfg_rvalid_i
+    // ,input  [ 31:0]  ext2_cfg_rdata_i
+    // ,input  [  1:0]  ext2_cfg_rresp_i
+    // ,input           ext2_irq_i
+    // ,input           ext3_cfg_awready_i
+    // ,input           ext3_cfg_wready_i
+    // ,input           ext3_cfg_bvalid_i
+    // ,input  [  1:0]  ext3_cfg_bresp_i
+    // ,input           ext3_cfg_arready_i
+    // ,input           ext3_cfg_rvalid_i
+    // ,input  [ 31:0]  ext3_cfg_rdata_i
+    // ,input  [  1:0]  ext3_cfg_rresp_i
+    // ,input           ext3_irq_i
 
     // Outputs
     ,output          intr_o
@@ -71,21 +96,47 @@ module core_soc
     ,output          inport_rvalid_o
     ,output [ 31:0]  inport_rdata_o
     ,output [  1:0]  inport_rresp_o
-`ifdef PERIPH_SPILITE
     ,output          spi_clk_o
     ,output          spi_mosi_o
     ,output [  7:0]  spi_cs_o
-`endif
-
     ,output          uart_tx_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
+
+    ,output          ext1_cfg_awvalid_o
+    ,output [ 31:0]  ext1_cfg_awaddr_o
+    ,output          ext1_cfg_wvalid_o
+    ,output [ 31:0]  ext1_cfg_wdata_o
+    ,output [  3:0]  ext1_cfg_wstrb_o
+    ,output          ext1_cfg_bready_o
+    ,output          ext1_cfg_arvalid_o
+    ,output [ 31:0]  ext1_cfg_araddr_o
+    ,output          ext1_cfg_rready_o
+    ,output          ext2_cfg_awvalid_o
+    ,output [ 31:0]  ext2_cfg_awaddr_o
+    ,output          ext2_cfg_wvalid_o
+    ,output [ 31:0]  ext2_cfg_wdata_o
+    ,output [  3:0]  ext2_cfg_wstrb_o
+    ,output          ext2_cfg_bready_o
+    ,output          ext2_cfg_arvalid_o
+    ,output [ 31:0]  ext2_cfg_araddr_o
+    ,output          ext2_cfg_rready_o
+    ,output          ext3_cfg_awvalid_o
+    ,output [ 31:0]  ext3_cfg_awaddr_o
+    ,output          ext3_cfg_wvalid_o
+    ,output [ 31:0]  ext3_cfg_wdata_o
+    ,output [  3:0]  ext3_cfg_wstrb_o
+    ,output          ext3_cfg_bready_o
+    ,output          ext3_cfg_arvalid_o
+    ,output [ 31:0]  ext3_cfg_araddr_o
+    ,output          ext3_cfg_rready_o
 
 // peripheral inputs
 // Buffered 125 MHz clock
     ,input         clock_125_i
 
-    // MII (Media-independent interface)
+`ifdef INCLUDE_ETHERNET
+// MII (Media-independent interface)
     ,input         mii_tx_clk_i
     ,output        mii_tx_er_o
     ,output        mii_tx_en_o
@@ -105,122 +156,115 @@ module core_soc
 // MII Management Interface
     ,output        mdc_o
     ,inout         mdio_io
+`endif
+
+// UTMI Interface
+    ,input  [  7:0]  utmi_data_out_i
+    ,input  [  7:0]  utmi_data_in_i
+    ,input           utmi_txvalid_i
+    ,input           utmi_txready_i
+    ,input           utmi_rxvalid_i
+    ,input           utmi_rxactive_i
+    ,input           utmi_rxerror_i
+    ,input  [  1:0]  utmi_linestate_i
+
+    ,output [  1:0]  utmi_op_mode_o
+    ,output [  1:0]  utmi_xcvrselect_o
+    ,output          utmi_termselect_o
+    ,output          utmi_dppulldown_o
+    ,output          utmi_dmpulldown_o
 );
 
-wire           interrupt0_w;
-wire           interrupt1_w;
-wire           interrupt2_w;
-wire           interrupt3_w;
-
-wire  [ 31:0]  periph0_araddr_w;
-wire           periph0_arready_w;
-wire           periph0_arvalid_w;
-wire  [ 31:0]  periph0_awaddr_w;
-wire           periph0_awready_w;
-wire           periph0_awvalid_w;
-wire           periph0_bready_w;
-wire  [  1:0]  periph0_bresp_w;
-wire           periph0_bvalid_w;
-wire  [ 31:0]  periph0_rdata_w;
-wire           periph0_rready_w;
-wire  [  1:0]  periph0_rresp_w;
-wire           periph0_rvalid_w;
-wire  [ 31:0]  periph0_wdata_w;
-wire           periph0_wready_w;
-wire  [  3:0]  periph0_wstrb_w;
-wire           periph0_wvalid_w;
-
-wire  [ 31:0]  periph1_araddr_w;
-wire           periph1_arready_w;
-wire           periph1_arvalid_w;
-wire  [ 31:0]  periph1_awaddr_w;
-wire           periph1_awready_w;
-wire           periph1_awvalid_w;
-wire           periph1_bready_w;
-wire  [  1:0]  periph1_bresp_w;
-wire           periph1_bvalid_w;
 wire  [ 31:0]  periph1_rdata_w;
-wire           periph1_rready_w;
-wire  [  1:0]  periph1_rresp_w;
-wire           periph1_rvalid_w;
-wire  [ 31:0]  periph1_wdata_w;
-wire           periph1_wready_w;
-wire  [  3:0]  periph1_wstrb_w;
-wire           periph1_wvalid_w;
-
-wire  [ 31:0]  periph2_araddr_w;
-wire           periph2_arready_w;
-wire           periph2_arvalid_w;
-wire  [ 31:0]  periph2_awaddr_w;
-wire           periph2_awready_w;
+wire  [  1:0]  periph0_bresp_w;
 wire           periph2_awvalid_w;
+wire  [  1:0]  periph3_rresp_w;
+wire           periph4_arready_w;
+wire           periph1_bready_w;
+wire           periph2_arready_w;
+wire           periph3_arvalid_w;
+wire  [ 31:0]  periph4_rdata_w;
+wire           periph3_bready_w;
+wire           periph3_rvalid_w;
+wire           periph4_bvalid_w;
+wire           periph1_bvalid_w;
+wire           periph4_arvalid_w;
 wire           periph2_bready_w;
-wire  [  1:0]  periph2_bresp_w;
-wire           periph2_bvalid_w;
+wire           periph0_rvalid_w;
+wire           periph2_awready_w;
+wire           periph2_arvalid_w;
+wire           periph1_arvalid_w;
 wire  [ 31:0]  periph2_rdata_w;
-wire           periph2_rready_w;
-wire  [  1:0]  periph2_rresp_w;
-wire           periph2_rvalid_w;
+wire           periph0_awvalid_w;
+wire  [ 31:0]  periph3_araddr_w;
+wire  [  1:0]  periph1_rresp_w;
+wire  [ 31:0]  periph0_rdata_w;
+wire  [  3:0]  periph4_wstrb_w;
+wire  [ 31:0]  periph2_awaddr_w;
+wire  [  1:0]  periph4_bresp_w;
+wire           periph1_arready_w;
+wire  [ 31:0]  periph3_rdata_w;
+wire           periph4_rready_w;
+wire           periph1_wvalid_w;
+wire  [ 31:0]  periph4_araddr_w;
+wire           periph0_bvalid_w;
+wire           periph0_rready_w;
+wire           periph1_rready_w;
+wire           periph4_rvalid_w;
+wire           periph3_arready_w;
+wire  [  1:0]  periph2_bresp_w;
+wire           periph3_awvalid_w;
+wire           periph4_wready_w;
+wire  [ 31:0]  periph3_awaddr_w;
+wire  [  3:0]  periph1_wstrb_w;
+wire  [  1:0]  periph0_rresp_w;
+wire  [  3:0]  periph0_wstrb_w;
+wire  [ 31:0]  periph1_wdata_w;
+wire           periph1_awready_w;
+wire           interrupt1_w;
+wire           interrupt0_w;
+wire           interrupt3_w;
+wire           interrupt2_w;
+wire  [ 31:0]  periph1_awaddr_w;
+wire           periph4_awvalid_w;
+wire           periph3_awready_w;
+wire           periph1_awvalid_w;
+wire           periph3_wready_w;
+wire           periph0_wready_w;
+wire  [ 31:0]  periph0_awaddr_w;
+wire  [  1:0]  periph3_bresp_w;
+wire           periph0_arvalid_w;
+wire           periph3_bvalid_w;
+wire           periph0_bready_w;
 wire  [ 31:0]  periph2_wdata_w;
-wire           periph2_wready_w;
+wire           periph4_wvalid_w;
+wire           periph0_wvalid_w;
 wire  [  3:0]  periph2_wstrb_w;
+wire           periph2_rvalid_w;
+wire  [ 31:0]  periph4_awaddr_w;
+wire  [  1:0]  periph4_rresp_w;
+wire  [  1:0]  periph1_bresp_w;
+wire           periph1_wready_w;
+wire           periph2_rready_w;
+wire           periph2_bvalid_w;
+wire           periph2_wready_w;
+wire  [ 31:0]  periph0_wdata_w;
+wire  [  3:0]  periph3_wstrb_w;
+wire  [ 31:0]  periph4_wdata_w;
+wire           periph0_awready_w;
+wire           periph1_rvalid_w;
+wire  [ 31:0]  periph1_araddr_w;
+wire           periph4_awready_w;
+wire           periph0_arready_w;
+wire  [ 31:0]  periph2_araddr_w;
+wire           periph3_wvalid_w;
+wire  [  1:0]  periph2_rresp_w;
+wire  [ 31:0]  periph0_araddr_w;
+wire           periph4_bready_w;
+wire  [ 31:0]  periph3_wdata_w;
+wire           periph3_rready_w;
 wire           periph2_wvalid_w;
 
-wire  [ 31:0]  periph3_araddr_w;
-wire           periph3_arready_w;
-wire           periph3_arvalid_w;
-wire  [ 31:0]  periph3_awaddr_w;
-wire           periph3_awready_w;
-wire           periph3_awvalid_w;
-wire           periph3_bready_w;
-wire  [  1:0]  periph3_bresp_w;
-wire           periph3_bvalid_w;
-wire  [ 31:0]  periph3_rdata_w;
-wire           periph3_rready_w;
-wire  [  1:0]  periph3_rresp_w;
-wire           periph3_rvalid_w;
-wire  [ 31:0]  periph3_wdata_w;
-wire           periph3_wready_w;
-wire  [  3:0]  periph3_wstrb_w;
-wire           periph3_wvalid_w;
-
-wire  [ 31:0]  periph4_araddr_w;
-wire           periph4_arready_w;
-wire           periph4_arvalid_w;
-wire  [ 31:0]  periph4_awaddr_w;
-wire           periph4_awready_w;
-wire           periph4_awvalid_w;
-wire           periph4_bready_w;
-wire  [  1:0]  periph4_bresp_w;
-wire           periph4_bvalid_w;
-wire  [ 31:0]  periph4_rdata_w;
-wire           periph4_rready_w;
-wire  [  1:0]  periph4_rresp_w;
-wire           periph4_rvalid_w;
-wire  [ 31:0]  periph4_wdata_w;
-wire           periph4_wready_w;
-wire  [  3:0]  periph4_wstrb_w;
-wire           periph4_wvalid_w;
-
-`ifdef INCLUDE_ETHERNET
-wire  [ 31:0]  periph5_araddr_w;
-wire           periph5_arready_w;
-wire           periph5_arvalid_w;
-wire  [ 31:0]  periph5_awaddr_w;
-wire           periph5_awready_w;
-wire           periph5_awvalid_w;
-wire           periph5_bready_w;
-wire  [  1:0]  periph5_bresp_w;
-wire           periph5_bvalid_w;
-wire  [ 31:0]  periph5_rdata_w;
-wire           periph5_rready_w;
-wire  [  1:0]  periph5_rresp_w;
-wire           periph5_rvalid_w;
-wire  [ 31:0]  periph5_wdata_w;
-wire           periph5_wready_w;
-wire  [  3:0]  periph5_wstrb_w;
-wire           periph5_wvalid_w;
-`endif
 
 irq_ctrl
 u_intc
@@ -241,6 +285,9 @@ u_intc
     ,.interrupt1_i(interrupt1_w)
     ,.interrupt2_i(interrupt2_w)
     ,.interrupt3_i(interrupt3_w)
+    ,.interrupt4_i(ext1_irq_i)
+    ,.interrupt5_i(ext2_irq_i)
+    ,.interrupt6_i(ext3_irq_i)
 
     // Outputs
     ,.cfg_awready_o(periph0_awready_w)
@@ -310,15 +357,30 @@ u_dist
     ,.outport4_rvalid_i(periph4_rvalid_w)
     ,.outport4_rdata_i(periph4_rdata_w)
     ,.outport4_rresp_i(periph4_rresp_w)
-    ,.outport5_awready_i(periph5_awready_w)
-    ,.outport5_wready_i(periph5_wready_w)
-    ,.outport5_bvalid_i(periph5_bvalid_w)
-    ,.outport5_bresp_i(periph5_bresp_w)
-    ,.outport5_arready_i(periph5_arready_w)
-    ,.outport5_rvalid_i(periph5_rvalid_w)
-    ,.outport5_rdata_i(periph5_rdata_w)
-    ,.outport5_rresp_i(periph5_rresp_w)
-
+    ,.outport5_awready_i(ext1_cfg_awready_i)
+    ,.outport5_wready_i(ext1_cfg_wready_i)
+    ,.outport5_bvalid_i(ext1_cfg_bvalid_i)
+    ,.outport5_bresp_i(ext1_cfg_bresp_i)
+    ,.outport5_arready_i(ext1_cfg_arready_i)
+    ,.outport5_rvalid_i(ext1_cfg_rvalid_i)
+    ,.outport5_rdata_i(ext1_cfg_rdata_i)
+    ,.outport5_rresp_i(ext1_cfg_rresp_i)
+    ,.outport6_awready_i(ext2_cfg_awready_i)
+    ,.outport6_wready_i(ext2_cfg_wready_i)
+    ,.outport6_bvalid_i(ext2_cfg_bvalid_i)
+    ,.outport6_bresp_i(ext2_cfg_bresp_i)
+    ,.outport6_arready_i(ext2_cfg_arready_i)
+    ,.outport6_rvalid_i(ext2_cfg_rvalid_i)
+    ,.outport6_rdata_i(ext2_cfg_rdata_i)
+    ,.outport6_rresp_i(ext2_cfg_rresp_i)
+    ,.outport7_awready_i(ext3_cfg_awready_i)
+    ,.outport7_wready_i(ext3_cfg_wready_i)
+    ,.outport7_bvalid_i(ext3_cfg_bvalid_i)
+    ,.outport7_bresp_i(ext3_cfg_bresp_i)
+    ,.outport7_arready_i(ext3_cfg_arready_i)
+    ,.outport7_rvalid_i(ext3_cfg_rvalid_i)
+    ,.outport7_rdata_i(ext3_cfg_rdata_i)
+    ,.outport7_rresp_i(ext3_cfg_rresp_i)
 
     // Outputs
     ,.inport_awready_o(inport_awready_o)
@@ -374,17 +436,33 @@ u_dist
     ,.outport4_arvalid_o(periph4_arvalid_w)
     ,.outport4_araddr_o(periph4_araddr_w)
     ,.outport4_rready_o(periph4_rready_w)
-`ifdef INCLUDE_ETHERNET
-    ,.outport5_awvalid_o(periph5_awvalid_w)
-    ,.outport5_awaddr_o(periph5_awaddr_w)
-    ,.outport5_wvalid_o(periph5_wvalid_w)
-    ,.outport5_wdata_o(periph5_wdata_w)
-    ,.outport5_wstrb_o(periph5_wstrb_w)
-    ,.outport5_bready_o(periph5_bready_w)
-    ,.outport5_arvalid_o(periph5_arvalid_w)
-    ,.outport5_araddr_o(periph5_araddr_w)
-    ,.outport5_rready_o(periph5_rready_w)
-`endif
+    ,.outport5_awvalid_o(ext1_cfg_awvalid_o)
+    ,.outport5_awaddr_o(ext1_cfg_awaddr_o)
+    ,.outport5_wvalid_o(ext1_cfg_wvalid_o)
+    ,.outport5_wdata_o(ext1_cfg_wdata_o)
+    ,.outport5_wstrb_o(ext1_cfg_wstrb_o)
+    ,.outport5_bready_o(ext1_cfg_bready_o)
+    ,.outport5_arvalid_o(ext1_cfg_arvalid_o)
+    ,.outport5_araddr_o(ext1_cfg_araddr_o)
+    ,.outport5_rready_o(ext1_cfg_rready_o)
+    ,.outport6_awvalid_o(ext2_cfg_awvalid_o)
+    ,.outport6_awaddr_o(ext2_cfg_awaddr_o)
+    ,.outport6_wvalid_o(ext2_cfg_wvalid_o)
+    ,.outport6_wdata_o(ext2_cfg_wdata_o)
+    ,.outport6_wstrb_o(ext2_cfg_wstrb_o)
+    ,.outport6_bready_o(ext2_cfg_bready_o)
+    ,.outport6_arvalid_o(ext2_cfg_arvalid_o)
+    ,.outport6_araddr_o(ext2_cfg_araddr_o)
+    ,.outport6_rready_o(ext2_cfg_rready_o)
+    ,.outport7_awvalid_o(ext3_cfg_awvalid_o)
+    ,.outport7_awaddr_o(ext3_cfg_awaddr_o)
+    ,.outport7_wvalid_o(ext3_cfg_wvalid_o)
+    ,.outport7_wdata_o(ext3_cfg_wdata_o)
+    ,.outport7_wstrb_o(ext3_cfg_wstrb_o)
+    ,.outport7_bready_o(ext3_cfg_bready_o)
+    ,.outport7_arvalid_o(ext3_cfg_arvalid_o)
+    ,.outport7_araddr_o(ext3_cfg_araddr_o)
+    ,.outport7_rready_o(ext3_cfg_rready_o)
 );
 
 
@@ -451,7 +529,7 @@ u_timer
     ,.intr_o(interrupt0_w)
 );
 
-`ifdef PERIPH_SPI_LITE
+
 spi_lite
 #(
      .C_SCK_RATIO(C_SCK_RATIO)
@@ -486,7 +564,49 @@ u_spi
     ,.spi_cs_o(spi_cs_o)
     ,.intr_o(interrupt2_w)
 );
-`endif
+
+usb_sniffer
+u_sniffer
+(
+    .clk_i(clk_i)
+    ,.rst_i(rst_i)
+    
+    // Peripheral Interface
+    ,.cfg_awvalid_i(ext2_cfg_awvalid_o)
+    ,.cfg_awaddr_i(ext2_cfg_awaddr_o)
+    ,.cfg_wvalid_i(ext2_cfg_wvalid_o)
+    ,.cfg_wdata_i(ext2_cfg_wdata_o)
+    ,.cfg_wstrb_i(ext2_cfg_wstrb_o)
+    ,.cfg_bready_i(ext2_cfg_bready_o)
+    ,.cfg_arvalid_i(ext2_cfg_arvalid_o)
+    ,.cfg_araddr_i(ext2_cfg_araddr_o)
+    ,.cfg_rready_i(ext2_cfg_rready_o)
+    
+    ,.cfg_awready_o(ext2_cfg_awready_i)
+    ,.cfg_wready_o(ext2_cfg_wready_i)
+    ,.cfg_bvalid_o(ext2_cfg_bvalid_i)
+    ,.cfg_bresp_o(ext2_cfg_bresp_i)
+    ,.cfg_arready_o(ext2_cfg__i)
+    ,.cfg_rvalid_o(ext2_cfg_rvalid_i)
+    ,.cfg_rdata_o(ext2_cfg_rdata_i)
+    ,.cfg_rresp_o(ext2_cfg_rresp_i)
+
+    // UTMI Interface
+    ,.utmi_data_out_i(utmi_data_out_i)
+    ,.utmi_data_in_i(utmi_data_in_i)
+    ,.utmi_txvalid_i(utmi_txvalid_i)
+    ,.utmi_txready_i(utmi_txready_i)
+    ,.utmi_rxvalid_i(utmi_rxvalid_i)
+    ,.utmi_rxactive_i(utmi_rxactive_i)
+    ,.utmi_rxerror_i(utmi_rxerror_i)
+    ,.utmi_linestate_i(utmi_linestate_i)
+
+    ,.utmi_op_mode_o(utmi_op_mode_o)
+    ,.utmi_xcvrselect_o(utmi_xcvrselect_o)
+    ,.utmi_termselect_o(utmi_termselect_o)
+    ,.utmi_dppulldown_o(utmi_dppulldown_o)
+    ,.utmi_dmpulldown_o(utmi_dmpulldown_o)
+);
 
 
 gpio
@@ -520,31 +640,30 @@ u_gpio
     ,.intr_o(interrupt3_w)
 );
 
-
 `ifdef INCLUDE_ETHERNET
 eth_axi4lite u_eth (
       // axi4lite Inputs
     .clk_i(clk_i)
     ,.rst_i(rst_i)
-    ,.cfg_awvalid_i(periph5_awvalid_w)
-    ,.cfg_awaddr_i(periph5_awaddr_w)
-    ,.cfg_wvalid_i(periph5_wvalid_w)
-    ,.cfg_wdata_i(periph5_wdata_w)
-    ,.cfg_wstrb_i(periph5_wstrb_w)
-    ,.cfg_bready_i(periph5_bready_w)
-    ,.cfg_arvalid_i(periph5_arvalid_w)
-    ,.cfg_araddr_i(periph5_araddr_w)
-    ,.cfg_rready_i(periph5_rready_w)
+    ,.cfg_awvalid_i(ext1_cfg_awvalid_o)
+    ,.cfg_awaddr_i(ext1_cfg_awaddr_o)
+    ,.cfg_wvalid_i(ext1_cfg_wvalid_o)
+    ,.cfg_wdata_i(ext1_cfg_wdata_o)
+    ,.cfg_wstrb_i(ext1_cfg_wstrb_o)
+    ,.cfg_bready_i(ext1_cfg_bready_o)
+    ,.cfg_arvalid_i(ext1_cfg_arvalid_o)
+    ,.cfg_araddr_i(ext1_cfg_araddr_o)
+    ,.cfg_rready_i(ext1_cfg_rready_o)
 
     // axi4lite Outputs
-    ,.cfg_awready_o(periph5_awready_w)
-    ,.cfg_wready_o(periph5_wready_w)
-    ,.cfg_bvalid_o(periph5_bvalid_w)
-    ,.cfg_bresp_o(periph5_bresp_w)
-    ,.cfg_arready_o(periph5_arready_w)
-    ,.cfg_rvalid_o(periph5_rvalid_w)
-    ,.cfg_rdata_o(periph5_rdata_w)
-    ,.cfg_rresp_o(periph5_rresp_w)
+    ,.cfg_awready_o(ext1_cfg_awready_w)
+    ,.cfg_wready_o(ext1_cfg_wready_w)
+    ,.cfg_bvalid_o(ext1_cfg_bvalid_w)
+    ,.cfg_bresp_o(ext1_cfg_bresp_w)
+    ,.cfg_arready_o(ext1_cfg_arready_w)
+    ,.cfg_rvalid_o(ext1_cfg_rvalid_w)
+    ,.cfg_rdata_o(ext1_cfg_rdata_w)
+    ,.cfg_rresp_o(ext1_cfg_rresp_w)
 
 
     // peripheral inputs

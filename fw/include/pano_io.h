@@ -2,6 +2,8 @@
 #define _PANIO_IO_H_
 
 #define GPIO_BASE             0x94000000
+#define ETH_BASE              0x95000000
+#define USB_BASE              0x96000000
 
 #define GPIO_BIT_PANO_BUTTON  0x02
 #define GPIO_BIT_RED_LED      0x04

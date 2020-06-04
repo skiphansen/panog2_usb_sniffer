@@ -13,7 +13,13 @@ module top
     // UART
     ,input           uart_txd_i
     ,output          uart_rxd_o
+    // SPI-Flash
+    ,output          flash_sck_o
+    ,output          flash_cs_o
+    ,output          flash_si_o
+    ,input           flash_so_i
 
+`ifdef INCLUDE_ETHERNET
     // MII (Media-independent interface)
     ,input         mii_tx_clk_i
     ,output        mii_tx_er_o
@@ -34,10 +40,19 @@ module top
      // MII Management Interface
      ,output        mdc_o
      ,inout         mdio_io
+`endif
+
+    // ULPI0 Interface
+    ,output        usb_clk
+    ,inout [7:0]   ulpi0_data_io
+    ,output        ulpi0_stp_o
+    ,input         ulpi0_nxt_i
+    ,input         ulpi0_dir_i
+    ,input         ulpi0_clk60_i
 );
 
-// Generate 32 Mhz system clock and 25 Mhz audio clock from 125 Mhz input clock
-wire clk32;
+// Generate 50 Mhz system clock and 24 Mhz USB clock from 125 Mhz input clock
+wire clk50;
 
 IBUFG clk125_buf
 (   .O (clk125),
@@ -47,17 +62,17 @@ IBUFG clk125_buf
 
 PLL_BASE
     #(.BANDWIDTH              ("OPTIMIZED"),
-      .CLKFBOUT_MULT          (16),
+      .CLKFBOUT_MULT          (24),
       .CLKFBOUT_PHASE         (0.000),
       .CLK_FEEDBACK           ("CLKFBOUT"),
       .CLKIN_PERIOD           (8.000),
       .COMPENSATION           ("SYSTEM_SYNCHRONOUS"),
       .DIVCLK_DIVIDE          (5),
       .REF_JITTER             (0.010),
-      .CLKOUT0_DIVIDE         (8),
+      .CLKOUT0_DIVIDE         (12),
       .CLKOUT0_DUTY_CYCLE     (0.500),
       .CLKOUT0_PHASE          (0.000),
-      .CLKOUT1_DIVIDE         (16),
+      .CLKOUT1_DIVIDE         (25),
       .CLKOUT1_DUTY_CYCLE     (0.500),
       .CLKOUT1_PHASE          (0.000)
     )
@@ -65,7 +80,7 @@ PLL_BASE
       // Output clocks
      (.CLKFBOUT              (clkfbout),
       .CLKOUT0               (clkout50),
-      .CLKOUT1               (clkout25),
+      .CLKOUT1               (clkout24),
       .CLKOUT2               (),
       .CLKOUT3               (),
       .CLKOUT4               (),
@@ -84,10 +99,95 @@ BUFG clkf_buf
  (.O (clkfbout_buf),
   .I (clkfbout));
 
-BUFG clk32_buf
-  (.O (clk32),
+BUFG clk50_buf
+  (.O (clk50),
    .I (clkout50));
 
+BUFG clk24_buf
+(.O (mhz24_buf),
+ .I (clkout24));
+
+ODDR2 clkout1_buf (
+  .D0(1'b1),
+  .D1(1'b0),
+  .C0(mhz24_buf),
+  .C1(!mhz24_buf),
+  .CE(1'b1),
+  .Q(usb_clk)
+);
+
+//-----------------------------------------------------------------
+// ULPI Interface
+//-----------------------------------------------------------------
+
+wire clk_bufg_w;
+IBUF u_ibuf ( .I(ulpi0_clk60_i), .O(clk_bufg_w) );
+BUFG u_bufg ( .I(clk_bufg_w),    .O(usb_clk_w) );
+
+// USB clock / reset
+wire usb_rst_w;
+
+reset_gen
+u_rst_usb
+(
+    .clk_i(usb_clk_w),
+    .rst_o(usb_rst_w)
+);
+
+// ULPI Buffers
+wire [7:0] ulpi_out_w;
+wire [7:0] ulpi_in_w;
+wire       ulpi_stp_w;
+
+genvar i;
+generate  
+for (i=0; i < 8; i=i+1)  
+begin: gen_buf
+    IOBUF 
+    #(
+        .DRIVE(12),
+        .IOSTANDARD("DEFAULT"),
+        .SLEW("FAST")
+    )
+    IOBUF_inst
+    (
+        .T(ulpi0_dir_i),
+        .I(ulpi_out_w[i]),
+        .O(ulpi_in_w[i]),
+        .IO(ulpi0_data_io[i])
+    );
+end  
+endgenerate  
+
+OBUF 
+#(
+    .DRIVE(12),
+    .IOSTANDARD("DEFAULT"),
+    .SLEW("FAST")
+)
+OBUF_stp
+(
+    .I(ulpi_stp_w),
+    .O(ulpi0_stp_o)
+);
+
+wire  [  7:0]  utmi_data_out_w = 8'b0;
+wire           utmi_txvalid_w = 1'b0;
+wire           utmi_txready_w;
+wire  [  7:0]  utmi_data_in_w;
+wire           utmi_rxvalid_w;
+wire           utmi_rxactive_w;
+wire           utmi_rxerror_w;
+wire  [  1:0]  utmi_linestate_w;
+
+wire  [  1:0]  utmi_op_mode_w;
+wire  [  1:0]  utmi_xcvrselect_w;
+wire           utmi_termselect_w;
+wire           utmi_dppulldown_w;
+wire           utmi_dmpulldown_w;
+
+
+assign ulpi0_reset_o = 1'b0;
 //-----------------------------------------------------------------
 // Reset
 //-----------------------------------------------------------------
@@ -96,7 +196,7 @@ wire rst;
 reset_gen
 u_rst
 (
-    .clk_i(clk32),
+    .clk_i(clk50),
     .rst_o(rst)
 );
 
@@ -106,12 +206,10 @@ u_rst
 wire        dbg_txd_w;
 wire        uart_txd_w;
 
-`ifdef PERIPH_SPILITE
 wire        spi_clk_w;
 wire        spi_so_w;
 wire        spi_si_w;
 wire [7:0]  spi_cs_w;
-`endif
 
 wire [31:0] gpio_in_w;
 wire [31:0] gpio_out_w;
@@ -128,7 +226,7 @@ fpga_top
 u_top
 (
     .clock_125_i(clk125)
-    ,.clk_i(clk32)
+    ,.clk_i(clk50)
     ,.rst_i(rst)
 
     ,.dbg_rxd_o(dbg_txd_w)
@@ -137,16 +235,15 @@ u_top
     ,.uart_tx_o(uart_txd_w)
     ,.uart_rx_i(uart_txd_i)
 
-`ifdef PERIPH_SPILITE
     ,.spi_clk_o(spi_clk_w)
     ,.spi_mosi_o(spi_si_w)
     ,.spi_miso_i(spi_so_w)
     ,.spi_cs_o(spi_cs_w)
-`endif
     ,.gpio_input_i(gpio_in_w)
     ,.gpio_output_o(gpio_out_w)
     ,.gpio_output_enable_o(gpio_out_en_w)
 
+`ifdef INCLUDE_ETHERNET
     // MII (Media-independent interface)
     ,.mii_tx_clk_i(mii_tx_clk_i)
     ,.mii_tx_er_o(mii_tx_er_o)
@@ -166,8 +263,59 @@ u_top
   // 
     ,.mdc_o(mdc_o)
     ,.mdio_io(mdio_io)
+`endif
 
+// UTMI
+    ,.utmi_data_out_i(utmi_data_out_w)
+    ,.utmi_data_in_i(utmi_data_in_w)
+    ,.utmi_txvalid_i(utmi_txvalid_w)
+    ,.utmi_txready_i(utmi_txready_w)
+    ,.utmi_rxvalid_i(utmi_rxvalid_w)
+    ,.utmi_rxactive_i(utmi_rxactive_w)
+    ,.utmi_rxerror_i(utmi_rxerror_w)
+    ,.utmi_linestate_i(utmi_linestate_w)
+
+    ,.utmi_op_mode_o(utmi_op_mode_w)
+    ,.utmi_xcvrselect_o(utmi_xcvrselect_w)
+    ,.utmi_termselect_o(utmi_termselect_w)
+    ,.utmi_dppulldown_o(utmi_dppulldown_w)
+    ,.utmi_dmpulldown_o(utmi_dmpulldown_w)
 );
+
+ulpi_wrapper
+u_usb
+(
+     .ulpi_clk60_i(usb_clk_w)
+    ,.ulpi_rst_i(usb_rst_w)
+
+    ,.ulpi_data_out_i(ulpi_in_w)
+    ,.ulpi_dir_i(ulpi0_dir_i)
+    ,.ulpi_nxt_i(ulpi0_nxt_i)
+    ,.ulpi_data_in_o(ulpi_out_w)
+    ,.ulpi_stp_o(ulpi_stp_w)
+
+    ,.utmi_data_out_i(utmi_data_out_w)
+    ,.utmi_txvalid_i(utmi_txvalid_w)
+    ,.utmi_op_mode_i(utmi_op_mode_w)
+    ,.utmi_xcvrselect_i(utmi_xcvrselect_w)
+    ,.utmi_termselect_i(utmi_termselect_w)
+    ,.utmi_dppulldown_i(utmi_dppulldown_w)
+    ,.utmi_dmpulldown_i(utmi_dmpulldown_w)
+    ,.utmi_data_in_o(utmi_data_in_w)
+    ,.utmi_txready_o(utmi_txready_w)
+    ,.utmi_rxvalid_o(utmi_rxvalid_w)
+    ,.utmi_rxactive_o(utmi_rxactive_w)
+    ,.utmi_rxerror_o(utmi_rxerror_w)
+    ,.utmi_linestate_o(utmi_linestate_w)
+);
+
+//-----------------------------------------------------------------
+// SPI Flash
+//-----------------------------------------------------------------
+assign flash_sck_o = spi_clk_w;
+assign flash_si_o  = spi_si_w;
+assign flash_cs_o  = spi_cs_w[0];
+assign spi_so_w    = flash_so_i;
 
 //-----------------------------------------------------------------
 // GPIO bits
@@ -203,7 +351,6 @@ assign codec_scl = gpio_out_en_w[6]  ? gpio_out_w[6]  : 1'bz;
 assign gpio_in_w[6]  = codec_scl;
 
 
-genvar i;
 generate
 for (i=7; i < 32; i=i+1) begin : gpio_in
     assign gpio_in_w[i]  = 1'b0;
@@ -217,7 +364,7 @@ endgenerate
 //synthesis attribute IOB of uart_rxd_o is "TRUE"
 reg txd_q;
 
-always @ (posedge clk32 or posedge rst)
+always @ (posedge clk50 or posedge rst)
 if (rst)
     txd_q <= 1'b1;
 else
