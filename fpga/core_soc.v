@@ -608,6 +608,58 @@ u_sniffer
     ,.utmi_dmpulldown_o(utmi_dmpulldown_o)
 );
 
+`ifdef PERIPH_USB_SNIFFER
+
+//-----------------------------------------------------------------
+// ULPI
+//-----------------------------------------------------------------
+
+wire [1:0]              xcvrselect_w;
+wire                    termselect_w;
+wire [1:0]              op_mode_w;
+wire                    dppulldown_w;
+wire                    dmpulldown_w;
+
+wire [7:0]              utmi_data_w = 8'b0;
+wire [7:0]              utmi_data_r;
+wire                    utmi_txvalid = 1'b0;
+wire                    utmi_txready;
+wire                    utmi_rxvalid;
+wire                    utmi_rxactive;
+wire                    utmi_rxerror;
+wire [1:0]              utmi_linestate;
+
+ulpi_wrapper
+u_ulpi
+(
+    .ulpi_clk60_i(clk_i),
+    .ulpi_rst_i(rst_i),
+
+    // ULPI Interface
+    .ulpi_data_out_i(ulpi_data_i),
+    .ulpi_data_in_o(ulpi_data_o),
+    .ulpi_dir_i(ulpi_dir_i),
+    .ulpi_nxt_i(ulpi_nxt_i),
+    .ulpi_stp_o(ulpi_stp_o),
+
+    // UTMI Interface
+    .utmi_txvalid_i(utmi_txvalid),
+    .utmi_txready_o(utmi_txready),
+    .utmi_rxvalid_o(utmi_rxvalid),
+    .utmi_rxactive_o(utmi_rxactive),
+    .utmi_rxerror_o(utmi_rxerror),
+    .utmi_data_in_o(utmi_data_r),
+    .utmi_data_out_i(utmi_data_w),
+    .utmi_xcvrselect_i(xcvrselect_w),
+    .utmi_termselect_i(termselect_w),
+    .utmi_op_mode_i(op_mode_w),
+    .utmi_dppulldown_i(dppulldown_w),
+    .utmi_dmpulldown_i(dmpulldown_w),
+    .utmi_linestate_o(utmi_linestate)
+);
+
+`endif
+
 
 gpio
 u_gpio

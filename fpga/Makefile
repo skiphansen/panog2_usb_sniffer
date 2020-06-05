@@ -10,7 +10,7 @@ SRC_DIR      += $(CORES_DIR)/core_soc/src_v
 SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/riscv
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
-SRC_DIR      += $(CORES_DIR)/cores/ulpi_wrapper/rtl
+SRC_DIR      += $(CORES_DIR)/core_ulpi_wrapper/src_v
 SRC_DIR      += $(CORES_DIR)/core_usb_sniffer/src_v
 
 ifeq ($(INCLUDE_ETHERNET),y)
@@ -19,10 +19,12 @@ SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx
 SRC_DIR      += $(CORES_DIR)/ethernet_mac/xilinx/ipcore_dir
 SRC_DIR      += $(PANO_CORES_DIR)/g2/ethernet_mac
 EXCLUDE_SRC  += $(CORES_DIR)/ethernet_mac/ethernet_mac_tb.vhd
-EXTRA_VFLAGS += INCUDE_ETHERNET=1
+EXTRA_VFLAGS += INCLUDE_ETHERNET=1
 else
 EXCLUDE_SRC += $(abspath ./eth_axi4lite.v)
 endif
+SRC_DIR	     += ${CORES_DIR}/ulpi_wrapper/src_v
+SRC_DIR	     += ${CORES_DIR}/usb_sniffer/src_v
 
 # EXCLUDE_SRC - list of core files with local replacements
 EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
