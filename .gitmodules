@@ -16,3 +16,6 @@
 [submodule "cores/core_usb_sniffer"]
 	path = cores/core_usb_sniffer
 	url = https://github.com/ultraembedded/core_usb_sniffer.git
+[submodule "cores/core_ulpi_wrapper"]
+	path = cores/core_ulpi_wrapper
+	url = https://github.com/ultraembedded/core_ulpi_wrapper.git
