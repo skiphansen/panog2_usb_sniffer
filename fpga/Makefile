@@ -3,7 +3,7 @@
 ###############################################################################
 include ../project.mk
 
-INCLUDE_ETHERNET ?= n
+INCLUDE_ETHERNET ?= y
 
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v

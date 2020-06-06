@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     uint32_t Temp;
     uint32_t ReadBack;
     uint32_t Led;
+    uint32_t UsbCmd = 3 << USB_BUFFER_CFG_SPEED_SHIFT;
     int Fast = 0;
 
     printf("Hello pano world!\n");
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
     Led = GPIO_BIT_RED_LED;
     for(; ; ) {
        REG_WR(GPIO_BASE + GPIO_OUTPUT,Led);
+       REG_WR(USB_BASE + USB_BUFFER_CFG,UsbCmd);
        for(i = 0; i < (Fast ? 3 : 10); i++) {
           timer_sleep(50);
           if(ButtonJustPressed()) {

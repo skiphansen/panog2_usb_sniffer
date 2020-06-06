@@ -87,7 +87,46 @@ module eth_axi4lite
     ,inout         mdio_io
 );
 
-wire reset;
+//-----------------------------------------------------------------
+// Write address / data split
+//-----------------------------------------------------------------
+// Address but no data ready
+reg awvalid_q;
+
+// Data but no data ready
+reg wvalid_q;
+
+wire wr_cmd_accepted_w  = (cfg_awvalid_i && cfg_awready_o) || awvalid_q;
+wire wr_data_accepted_w = (cfg_wvalid_i  && cfg_wready_o)  || wvalid_q;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    awvalid_q <= 1'b0;
+else if (cfg_awvalid_i && cfg_awready_o && !wr_data_accepted_w)
+    awvalid_q <= 1'b1;
+else if (wr_data_accepted_w)
+    awvalid_q <= 1'b0;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    wvalid_q <= 1'b0;
+else if (cfg_wvalid_i && cfg_wready_o && !wr_cmd_accepted_w)
+    wvalid_q <= 1'b1;
+else if (wr_cmd_accepted_w)
+    wvalid_q <= 1'b0;
+
+//-----------------------------------------------------------------
+// Capture address (for delayed data)
+//-----------------------------------------------------------------
+reg [7:0] wr_addr_q;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    wr_addr_q <= 8'b0;
+else if (cfg_awvalid_i && cfg_awready_o)
+    wr_addr_q <= cfg_awaddr_i[7:0];
+
+wire [7:0] wr_addr_w = awvalid_q ? wr_addr_q : cfg_awaddr_i[7:0];
 wire [47:0] mac_address = MAC_ADDRESS;
 wire rx_reset;
 wire rx_empty;
@@ -109,21 +148,21 @@ reg [31:0] wr_data_q;
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
     wr_data_q <= 32'b0;
-else
+else if (cfg_wvalid_i && cfg_wready_o)
     wr_data_q <= cfg_wdata_i;
 
 //-----------------------------------------------------------------
 // Request Logic
 //-----------------------------------------------------------------
 wire read_en_w  = cfg_arvalid_i & cfg_arready_o;
-wire write_en_w = cfg_awvalid_i & cfg_awready_o;
+wire write_en_w = wr_cmd_accepted_w && wr_data_accepted_w;
 
 //-----------------------------------------------------------------
 // Accept Logic
 //-----------------------------------------------------------------
 assign cfg_arready_o = ~cfg_rvalid_o;
-assign cfg_awready_o = ~cfg_bvalid_o && ~cfg_arvalid_i; 
-assign cfg_wready_o  = cfg_awready_o;
+assign cfg_awready_o = ~cfg_bvalid_o && ~cfg_arvalid_i && ~awvalid_q;
+assign cfg_wready_o  = ~cfg_bvalid_o && ~cfg_arvalid_i && ~wvalid_q;
 
 
 //-----------------------------------------------------------------
@@ -133,7 +172,7 @@ assign cfg_wready_o  = cfg_awready_o;
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
     tx_wr_en <= 1'b0;
-else if (write_en_w && (cfg_awaddr_i[7:0] == `ETH_TX))
+else if (write_en_w && (wr_addr_w[7:0] == `ETH_TX))
     tx_wr_en <= 1'b1;
 else
     tx_wr_en <= 1'b0;
@@ -149,7 +188,7 @@ reg eth_status_wr_q;
 always @ (posedge clk_i or posedge rst_i)
 if (rst_i)
     eth_status_wr_q <= 1'b0;
-else if (write_en_w && (cfg_awaddr_i[7:0] == `ETH_STATUS))
+else if (write_en_w && (wr_addr_w[7:0] == `ETH_STATUS))
     eth_status_wr_q <= 1'b1;
 else
     eth_status_wr_q <= 1'b0;
