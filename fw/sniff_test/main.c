@@ -24,19 +24,35 @@ int main(int argc, char *argv[])
     unsigned char Buf[256];
     int Id = 0;
     uint32_t Temp;
+    uint32_t ReadBack;
     uint32_t Led;
     int Fast = 0;
 
     printf("Hello pano world!\n");
     printf("Click the pano button to change the LED blink rate.\n");
 
-    printf("Reading from 0x%x\n",GPIO_BASE+ USB_BUFFER_CFG);
-    printf("USB_BUFFER_CFG: 0x%x\n",REG_RD(GPIO_BASE + USB_BUFFER_CFG));
     printf("USB_BUFFER_CFG: 0x%x\n",REG_RD(USB_BASE + USB_BUFFER_CFG));
     printf("USB_BUFFER_STS: 0x%x\n",REG_RD(USB_BASE + USB_BUFFER_STS));
     printf("USB_BUFFER_BASE: 0x%x\n",REG_RD(USB_BASE + USB_BUFFER_BASE));
     printf("USB_BUFFER_END: 0x%x\n",REG_RD(USB_BASE + USB_BUFFER_END));
     printf("USB_BUFFER_CURRENT: 0x%x\n",REG_RD(USB_BASE + USB_BUFFER_CURRENT));
+
+    printf("Testing ability to write to USB_BUFFER_END ... ");
+    Temp = 1;
+    for(i = 0; i < 32; i++) {
+       REG_WR(USB_BASE + USB_BUFFER_END,Temp);
+       timer_sleep_us(100);
+       ReadBack = REG_RD(USB_BASE + USB_BUFFER_END);
+       if(Temp != ReadBack) {
+          printf("\nWrite error: wrote 0x%x, read 0x%x\n",Temp,ReadBack);
+       }
+       Temp <<= 1;
+    }
+
+    if(i == 32) {
+       printf("passed\n");
+    }
+
 
 // Set LED GPIO's to output
     Temp = REG_RD(GPIO_BASE + GPIO_DIRECTION);

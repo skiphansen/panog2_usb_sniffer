@@ -28,9 +28,7 @@
 // USA
 //-----------------------------------------------------------------
 
-//-----------------------------------------------------------------
-//                          Generated File
-//-----------------------------------------------------------------
+`define PERIPH_USB_SNIFFER  1
 
 module fpga_top
 //-----------------------------------------------------------------
@@ -181,6 +179,60 @@ wire  [ 31:0]  axi_i_araddr_w;
 wire           axi_t_wready_w;
 wire  [  3:0]  axi_t_rid_w;
 
+wire           ext1_cfg_awready_w;
+wire           ext1_cfg_wready_w;
+wire           ext1_cfg_bvalid_w;
+wire  [  1:0]  ext1_cfg_bresp_w;
+wire           ext1_cfg_arready_w;
+wire           ext1_cfg_rvalid_w;
+wire  [ 31:0]  ext1_cfg_rdata_w;
+wire  [  1:0]  ext1_cfg_rresp_w;
+wire           ext1_irq_w;
+wire           ext2_cfg_awready_w;
+wire           ext2_cfg_wready_w;
+wire           ext2_cfg_bvalid_w;
+wire  [  1:0]  ext2_cfg_bresp_w;
+wire           ext2_cfg_arready_w;
+wire           ext2_cfg_rvalid_w;
+wire  [ 31:0]  ext2_cfg_rdata_w;
+wire  [  1:0]  ext2_cfg_rresp_w;
+wire           ext2_irq_w;
+wire           ext3_cfg_awready_w;
+wire           ext3_cfg_wready_w;
+wire           ext3_cfg_bvalid_w;
+wire  [  1:0]  ext3_cfg_bresp_w;
+wire           ext3_cfg_arready_w;
+wire           ext3_cfg_rvalid_w;
+wire  [ 31:0]  ext3_cfg_rdata_w;
+wire  [  1:0]  ext3_cfg_rresp_w;
+wire           ext3_irq_w;
+wire          ext1_cfg_awvalid_w;
+wire [ 31:0]  ext1_cfg_awaddr_w;
+wire          ext1_cfg_wvalid_w;
+wire [ 31:0]  ext1_cfg_wdata_w;
+wire [  3:0]  ext1_cfg_wstrb_w;
+wire          ext1_cfg_bready_w;
+wire          ext1_cfg_arvalid_w;
+wire [ 31:0]  ext1_cfg_araddr_w;
+wire          ext1_cfg_rready_w;
+wire          ext2_cfg_awvalid_w;
+wire [ 31:0]  ext2_cfg_awaddr_w;
+wire          ext2_cfg_wvalid_w;
+wire [ 31:0]  ext2_cfg_wdata_w;
+wire [  3:0]  ext2_cfg_wstrb_w;
+wire          ext2_cfg_bready_w;
+wire          ext2_cfg_arvalid_w;
+wire [ 31:0]  ext2_cfg_araddr_w;
+wire          ext2_cfg_rready_w;
+wire          ext3_cfg_awvalid_w;
+wire [ 31:0]  ext3_cfg_awaddr_w;
+wire          ext3_cfg_wvalid_w;
+wire [ 31:0]  ext3_cfg_wdata_w;
+wire [  3:0]  ext3_cfg_wstrb_w;
+wire          ext3_cfg_bready_w;
+wire          ext3_cfg_arvalid_w;
+wire [ 31:0]  ext3_cfg_araddr_w;
+wire          ext3_cfg_rready_w;
 
 dbg_bridge
 #(
@@ -371,6 +423,33 @@ u_soc
     ,.spi_miso_i(spi_miso_i)
     ,.uart_rx_i(uart_rx_i)
     ,.gpio_input_i(gpio_input_i)
+    ,.ext1_cfg_awready_i(ext1_cfg_awready_w)
+    ,.ext1_cfg_wready_i(ext1_cfg_wready_w)
+    ,.ext1_cfg_bvalid_i(ext1_cfg_bvalid_w)
+    ,.ext1_cfg_bresp_i(ext1_cfg_bresp_w)
+    ,.ext1_cfg_arready_i(ext1_cfg_arready_w)
+    ,.ext1_cfg_rvalid_i(ext1_cfg_rvalid_w)
+    ,.ext1_cfg_rdata_i(ext1_cfg_rdata_w)
+    ,.ext1_cfg_rresp_i(ext1_cfg_rresp_w)
+    ,.ext1_irq_i(ext1_irq_w)
+    ,.ext2_cfg_awready_i(ext2_cfg_awready_w)
+    ,.ext2_cfg_wready_i(ext2_cfg_wready_w)
+    ,.ext2_cfg_bvalid_i(ext2_cfg_bvalid_w)
+    ,.ext2_cfg_bresp_i(ext2_cfg_bresp_w)
+    ,.ext2_cfg_arready_i(ext2_cfg_arready_w)
+    ,.ext2_cfg_rvalid_i(ext2_cfg_rvalid_w)
+    ,.ext2_cfg_rdata_i(ext2_cfg_rdata_w)
+    ,.ext2_cfg_rresp_i(ext2_cfg_rresp_w)
+    ,.ext2_irq_i(ext2_irq_w)
+    ,.ext3_cfg_awready_i(ext3_cfg_awready_w)
+    ,.ext3_cfg_wready_i(ext3_cfg_wready_w)
+    ,.ext3_cfg_bvalid_i(ext3_cfg_bvalid_w)
+    ,.ext3_cfg_bresp_i(ext3_cfg_bresp_w)
+    ,.ext3_cfg_arready_i(ext3_cfg_arready_w)
+    ,.ext3_cfg_rvalid_i(ext3_cfg_rvalid_w)
+    ,.ext3_cfg_rdata_i(ext3_cfg_rdata_w)
+    ,.ext3_cfg_rresp_i(ext3_cfg_rresp_w)
+    ,.ext3_irq_i(ext3_irq_w)
 
     // Outputs
     ,.intr_o(soc_intr_w)
@@ -389,47 +468,34 @@ u_soc
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
 
-// Ethernet connections -------
-     ,.clock_125_i(clock_125_i)
-`ifdef INCLUDE_ETHERNET
-
-     // MII (Media-independent interface)
-     ,.mii_tx_clk_i(mii_tx_clk_i)
-     ,.mii_tx_er_o(mii_tx_er_o)
-     ,.mii_tx_en_o(mii_tx_en_o)
-     ,.mii_txd_o(mii_txd_o)
-     ,.mii_rx_clk_i(mii_rx_clk_i)
-     ,.mii_rx_er_i(mii_rx_er_i)
-     ,.mii_rx_dv_i(mii_rx_dv_i)
-     ,.mii_rxd_i(mii_rxd_i)
-
- // GMII (Gigabit media-independent interface)
-     ,.gmii_gtx_clk_o(gmii_gtx_clk_o)
-
- // RGMII (Reduced pin count gigabit media-independent interface)
-     ,.rgmii_tx_ctl_o(rgmii_tx_ctl_o)
-     ,.rgmii_rx_ctl_i(rgmii_rx_ctl_i)
-// MII Management Interface
-     ,.mdc_o(mdc_o)
-     ,.mdio_io(mdio_io)
-`endif
-
-// UTMI Interface
-    ,.utmi_data_out_i(utmi_data_out_i)
-    ,.utmi_data_in_i(utmi_data_in_i)
-    ,.utmi_txvalid_i(utmi_txvalid_i)
-    ,.utmi_txready_i(utmi_txready_i)
-    ,.utmi_rxvalid_i(utmi_rxvalid_i)
-    ,.utmi_rxactive_i(utmi_rxactive_i)
-    ,.utmi_rxerror_i(utmi_rxerror_i)
-    ,.utmi_linestate_i(utmi_linestate_i)
-     ,.utmi_op_mode_o(utmi_op_mode_o)
-     ,.utmi_xcvrselect_o(utmi_xcvrselect_o)
-     ,.utmi_termselect_o(utmi_termselect_o)
-     ,.utmi_dppulldown_o(utmi_dppulldown_o)
-     ,.utmi_dmpulldown_o(utmi_dmpulldown_o)
+    ,.ext1_cfg_awvalid_o(ext1_cfg_awvalid_w)
+    ,.ext1_cfg_awaddr_o(ext1_cfg_awaddr_w)
+    ,.ext1_cfg_wvalid_o(ext1_cfg_wvalid_w)
+    ,.ext1_cfg_wdata_o(ext1_cfg_wdata_w)
+    ,.ext1_cfg_wstrb_o(ext1_cfg_wstrb_w)
+    ,.ext1_cfg_bready_o(ext1_cfg_bready_w)
+    ,.ext1_cfg_arvalid_o(ext1_cfg_arvalid_w)
+    ,.ext1_cfg_araddr_o(ext1_cfg_araddr_w)
+    ,.ext1_cfg_rready_o(ext1_cfg_rready_w)
+    ,.ext2_cfg_awvalid_o(ext2_cfg_awvalid_w)
+    ,.ext2_cfg_awaddr_o(ext2_cfg_awaddr_w)
+    ,.ext2_cfg_wvalid_o(ext2_cfg_wvalid_w)
+    ,.ext2_cfg_wdata_o(ext2_cfg_wdata_w)
+    ,.ext2_cfg_wstrb_o(ext2_cfg_wstrb_w)
+    ,.ext2_cfg_bready_o(ext2_cfg_bready_w)
+    ,.ext2_cfg_arvalid_o(ext2_cfg_arvalid_w)
+    ,.ext2_cfg_araddr_o(ext2_cfg_araddr_w)
+    ,.ext2_cfg_rready_o(ext2_cfg_rready_w)
+    ,.ext3_cfg_awvalid_o(ext3_cfg_awvalid_w)
+    ,.ext3_cfg_awaddr_o(ext3_cfg_awaddr_w)
+    ,.ext3_cfg_wvalid_o(ext3_cfg_wvalid_w)
+    ,.ext3_cfg_wdata_o(ext3_cfg_wdata_w)
+    ,.ext3_cfg_wstrb_o(ext3_cfg_wstrb_w)
+    ,.ext3_cfg_bready_o(ext3_cfg_bready_w)
+    ,.ext3_cfg_arvalid_o(ext3_cfg_arvalid_w)
+    ,.ext3_cfg_araddr_o(ext3_cfg_araddr_w)
+    ,.ext3_cfg_rready_o(ext3_cfg_rready_w)
 );
-
 
 // enable_w[0] from the dbg_bridge is used for a reset, but  we want to 
 // come up running so ignore it until it has been asserted and released once
@@ -455,4 +521,154 @@ always @(posedge clk_i or posedge rst_i)
 assign rst_cpu_w       = rst_cpu_r;
 assign cpu_intr_w      = {31'b0, soc_intr_w};
 
+`ifdef PERIPH_USB_SNIFFER
+
+usb_sniffer
+u_sniffer
+(
+    .clk_i(clk_i)
+    ,.rst_i(rst_i)
+    
+    // Peripheral Interface
+    ,.cfg_awvalid_i(ext2_cfg_awvalid_w)
+    ,.cfg_awaddr_i(ext2_cfg_awaddr_w)
+    ,.cfg_wvalid_i(ext2_cfg_wvalid_w)
+    ,.cfg_wdata_i(ext2_cfg_wdata_w)
+    ,.cfg_wstrb_i(ext2_cfg_wstrb_w)
+    ,.cfg_bready_i(ext2_cfg_bready_w)
+    ,.cfg_arvalid_i(ext2_cfg_arvalid_w)
+    ,.cfg_araddr_i(ext2_cfg_araddr_w)
+    ,.cfg_rready_i(ext2_cfg_rready_w)
+    
+    ,.cfg_awready_o(ext2_cfg_awready_w)
+    ,.cfg_wready_o(ext2_cfg_wready_w)
+    ,.cfg_bvalid_o(ext2_cfg_bvalid_w)
+    ,.cfg_bresp_o(ext2_cfg_bresp_w)
+    ,.cfg_arready_o(ext2_cfg_arready_w)
+    ,.cfg_rvalid_o(ext2_cfg_rvalid_w)
+    ,.cfg_rdata_o(ext2_cfg_rdata_w)
+    ,.cfg_rresp_o(ext2_cfg_rresp_w)
+
+    // UTMI Interface
+    ,.utmi_data_out_i(utmi_data_out_i)
+    ,.utmi_data_in_i(utmi_data_in_i)
+    ,.utmi_txvalid_i(utmi_txvalid_i)
+    ,.utmi_txready_i(utmi_txready_i)
+    ,.utmi_rxvalid_i(utmi_rxvalid_i)
+    ,.utmi_rxactive_i(utmi_rxactive_i)
+    ,.utmi_rxerror_i(utmi_rxerror_i)
+    ,.utmi_linestate_i(utmi_linestate_i)
+
+    ,.utmi_op_mode_o(utmi_op_mode_o)
+    ,.utmi_xcvrselect_o(utmi_xcvrselect_o)
+    ,.utmi_termselect_o(utmi_termselect_o)
+    ,.utmi_dppulldown_o(utmi_dppulldown_o)
+    ,.utmi_dmpulldown_o(utmi_dmpulldown_o)
+);
+
+
+//-----------------------------------------------------------------
+// ULPI
+//-----------------------------------------------------------------
+
+wire [1:0]              xcvrselect_w;
+wire                    termselect_w;
+wire [1:0]              op_mode_w;
+wire                    dppulldown_w;
+wire                    dmpulldown_w;
+
+wire [7:0]              utmi_data_w = 8'b0;
+wire [7:0]              utmi_data_r;
+wire                    utmi_txvalid = 1'b0;
+wire                    utmi_txready;
+wire                    utmi_rxvalid;
+wire                    utmi_rxactive;
+wire                    utmi_rxerror;
+wire [1:0]              utmi_linestate;
+
+ulpi_wrapper
+u_ulpi
+(
+    .ulpi_clk60_i(clk_i),
+    .ulpi_rst_i(rst_i),
+
+    // ULPI Interface
+    .ulpi_data_out_i(ulpi_data_i),
+    .ulpi_data_in_o(ulpi_data_o),
+    .ulpi_dir_i(ulpi_dir_i),
+    .ulpi_nxt_i(ulpi_nxt_i),
+    .ulpi_stp_o(ulpi_stp_o),
+
+    // UTMI Interface
+    .utmi_txvalid_i(utmi_txvalid),
+    .utmi_txready_o(utmi_txready),
+    .utmi_rxvalid_o(utmi_rxvalid),
+    .utmi_rxactive_o(utmi_rxactive),
+    .utmi_rxerror_o(utmi_rxerror),
+    .utmi_data_in_o(utmi_data_r),
+    .utmi_data_out_i(utmi_data_w),
+    .utmi_xcvrselect_i(xcvrselect_w),
+    .utmi_termselect_i(termselect_w),
+    .utmi_op_mode_i(op_mode_w),
+    .utmi_dppulldown_i(dppulldown_w),
+    .utmi_dmpulldown_i(dmpulldown_w),
+    .utmi_linestate_o(utmi_linestate)
+);
+
+`endif
+
+`ifdef INCLUDE_ETHERNET
+eth_axi4lite u_eth (
+      // axi4lite Inputs
+    .clk_i(clk_i)
+    ,.rst_i(rst_i)
+    ,.cfg_awvalid_i(ext1_cfg_awvalid_w)
+    ,.cfg_awaddr_i(ext1_cfg_awaddr_w)
+    ,.cfg_wvalid_i(ext1_cfg_wvalid_w)
+    ,.cfg_wdata_i(ext1_cfg_wdata_w)
+    ,.cfg_wstrb_i(ext1_cfg_wstrb_w)
+    ,.cfg_bready_i(ext1_cfg_bready_w)
+    ,.cfg_arvalid_i(ext1_cfg_arvalid_w)
+    ,.cfg_araddr_i(ext1_cfg_araddr_w)
+    ,.cfg_rready_i(ext1_cfg_rready_w)
+
+    // axi4lite Outputs
+    ,.cfg_awready_o(ext1_cfg_awready_w)
+    ,.cfg_wready_o(ext1_cfg_wready_w)
+    ,.cfg_bvalid_o(ext1_cfg_bvalid_w)
+    ,.cfg_bresp_o(ext1_cfg_bresp_w)
+    ,.cfg_arready_o(ext1_cfg_arready_w)
+    ,.cfg_rvalid_o(ext1_cfg_rvalid_w)
+    ,.cfg_rdata_o(ext1_cfg_rdata_w)
+    ,.cfg_rresp_o(ext1_cfg_rresp_w)
+
+
+    // peripheral inputs
+    ,.clock_125_i(clock_125_i)
+
+    // MII (Media-independent interface)
+    ,.mii_tx_clk_i(mii_tx_clk_i)
+    ,.mii_tx_er_o(mii_tx_er_o)
+    ,.mii_tx_en_o(mii_tx_en_o)
+    ,.mii_txd_o(mii_txd_o)
+    ,.mii_rx_clk_i(mii_rx_clk_i)
+    ,.mii_rx_er_i(mii_rx_er_i)
+    ,.mii_rx_dv_i(mii_rx_dv_i)
+    ,.mii_rxd_i(mii_rxd_i)
+
+    // GMII (Gigabit media-independent interface)
+    ,.gmii_gtx_clk_o(gmii_gtx_clk_o)
+
+    // RGMII (Reduced pin count gigabit media-independent interface)
+    ,.rgmii_tx_ctl_o(rgmii_tx_ctl_o)
+    ,.rgmii_rx_ctl_i(rgmii_rx_ctl_i)
+
+    // MII Management Interface
+    ,.mdc_o(mdc_o)
+    ,.mdio_io(mdio_io)
+);
+`endif
+
 endmodule
+
+

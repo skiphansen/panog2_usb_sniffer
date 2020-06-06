@@ -26,9 +26,6 @@ endif
 SRC_DIR	     += ${CORES_DIR}/ulpi_wrapper/src_v
 SRC_DIR	     += ${CORES_DIR}/usb_sniffer/src_v
 
-# EXCLUDE_SRC - list of core files with local replacements
-EXCLUDE_SRC += $(CORES_DIR)/core_soc/src_v/core_soc.v
-
 BSCAN_SPI_DIR = $(PANO_CORES_DIR)/xc3sprog
 
 COMPRESS_BITFILE = yes
@@ -68,8 +65,5 @@ $(PATCHED_CPU): $(CPU_PATCHES)
 	touch $@
 
 firmware.mem:
-	make -C $(TOPDIR)/fw/lwip_test init_image
+	make -C $(TOPDIR)/fw/blinky init_image
 
-debug:
-	echo "EXCLUDE_SRC: $(EXCLUDE_SRC)"
-	echo "VERILOG_SRCS: $(VERILOG_SRCS)"
