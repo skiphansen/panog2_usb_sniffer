@@ -10,7 +10,7 @@ SRC_DIR     += $(PANO_FW_DIR)/lib/libstd
 
 INCLUDE_PATH += ../include
 INCLUDE_PATH += $(PANO_FW_DIR)/common
-INCLUDE_PATH += $(CORES_DIR)/core_usb_sniffer/src_c
+INCLUDE_PATH += $(PANO_RTL_DIR)/usb_sniffer
 
 # build optons
 OPT        = 2

@@ -3,7 +3,7 @@
 ###############################################################################
 include ../project.mk
 
-INCLUDE_ETHERNET ?= y
+INCLUDE_ETHERNET ?= n
 
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v
@@ -11,7 +11,8 @@ SRC_DIR      += $(CORES_DIR)/dbg_bridge/src_v
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/core/riscv
 SRC_DIR      += $(CORES_DIR)/cpu/riscv/top_tcm_wrapper
 SRC_DIR      += $(CORES_DIR)/core_ulpi_wrapper/src_v
-SRC_DIR      += $(CORES_DIR)/core_usb_sniffer/src_v
+#SRC_DIR      += $(CORES_DIR)/core_usb_sniffer/src_v
+SRC_DIR      += $(abspath usb_sniffer)
 
 ifeq ($(INCLUDE_ETHERNET),y)
 SRC_DIR      += $(CORES_DIR)/ethernet_mac
