@@ -392,7 +392,8 @@ This project uses code from several other projects including:
 
 ## Pano Links
 
-Link to other Panologic information can be found [here](https://github.com/skiphansen/pano_blocks#pano-links)
+
+Links to other Pano logic information can be found on the [Pano Logic Hackers wiki](https://github.com/tomverbeure/panologic-g2/wiki)
 
 ## LEGAL 
 

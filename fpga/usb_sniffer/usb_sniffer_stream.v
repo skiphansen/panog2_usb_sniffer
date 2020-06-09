@@ -141,7 +141,7 @@ else if (cfg_wvalid_i && cfg_wready_o)
 //-----------------------------------------------------------------
 wire read_en_w  = cfg_arvalid_i & cfg_arready_o;
 wire write_en_w = wr_cmd_accepted_w && wr_data_accepted_w;
-wire fifo_read_en_w  = (cfg_araddr_i[7:0] == `USB_FIFO_READ) ? outport_tready_i : 1'b0;
+wire fifo_read_en_w  = (cfg_araddr_i[7:0] == `USB_FIFO_READ) ? rvalid_q : 1'b0;
 
 //-----------------------------------------------------------------
 // Accept Logic
@@ -371,6 +371,7 @@ else
 
 
 wire        usb_buffer_sts_data_loss_in_w;
+wire        usb_buffer_sts_trig_in_w;
 //-----------------------------------------------------------------
 // Read mux
 //-----------------------------------------------------------------
