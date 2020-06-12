@@ -34,6 +34,8 @@
 #ifndef __USB_SNIFFER_STREAM_DEFS_H__
 #define __USB_SNIFFER_STREAM_DEFS_H__
 
+#define USB_FIFO_SIZE     0x10000   // 64k bytes
+
 #define USB_BUFFER_CFG    0x0
     #define USB_BUFFER_CFG_CONT                  31
     #define USB_BUFFER_CFG_CONT_SHIFT            31
@@ -107,21 +109,12 @@
     #define USB_BUFFER_STS_TRIG_SHIFT            0
     #define USB_BUFFER_STS_TRIG_MASK             0x1
 
-#define USB_BUFFER_BASE   0x8
-    #define USB_BUFFER_BASE_ADDR_SHIFT           0
-    #define USB_BUFFER_BASE_ADDR_MASK            0xffffffff
-
-#define USB_BUFFER_END    0xc
-    #define USB_BUFFER_END_ADDR_SHIFT            0
-    #define USB_BUFFER_END_ADDR_MASK             0xffffffff
-
-#define USB_BUFFER_CURRENT  0x10
-    #define USB_BUFFER_CURRENT_ADDR_SHIFT        0
-    #define USB_BUFFER_CURRENT_ADDR_MASK         0xffffffff
-
 #define USB_FIFO_READ         0x14
 
-#define USB_FIFO_AVAILABLE    0x18
+#define USB_FIFO_STS          0x18
+    #define USB_FIFO_STS_ERR_MASK               0x80000000
+    #define USB_FIFO_STS_MSG_MASK               0x40000000
+    #define USB_FIFO_STAT_AVAIL                 0x3fffffff
 
 #define USB_SPEED_HS       0
 #define USB_SPEED_FS       1

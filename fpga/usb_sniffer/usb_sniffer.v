@@ -94,7 +94,7 @@ wire         buffer_full_w;
 wire [31:0]  fifo_read_w;
 wire [13:0]  fifo_read_available_w;
 wire         fifo_read_valid_w;
-
+wire         buffer_reset_w;
 
 usb_sniffer_stream
 u_core
@@ -145,7 +145,7 @@ u_core
     
     // Read FIFO AXI4 interface
     ,.fifo_read_data_i(fifo_read_w)
-    ,.fifo_read_available_i({18'b0, fifo_read_available_w})
+    ,.fifo_read_available_i({fifo_overrun_w, 17'b0, fifo_read_available_w})
     ,.fifo_read_valid_o(fifo_read_valid_w)
 );
 

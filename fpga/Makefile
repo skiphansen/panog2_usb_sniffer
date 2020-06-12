@@ -3,7 +3,7 @@
 ###############################################################################
 include ../project.mk
 
-INCLUDE_ETHERNET ?= n
+INCLUDE_ETHERNET ?= y
 
 SRC_DIR       = .
 SRC_DIR      += $(CORES_DIR)/core_soc/src_v
@@ -68,3 +68,6 @@ $(PATCHED_CPU): $(CPU_PATCHES)
 firmware.mem:
 	make -C $(TOPDIR)/fw/blinky init_image
 
+debug:
+	echo "INCLUDE_ETHERNET: $(INCLUDE_ETHERNET)"
+	echo "SRC_DIR: $(SRC_DIR)"

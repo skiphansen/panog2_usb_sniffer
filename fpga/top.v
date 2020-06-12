@@ -69,7 +69,7 @@ PLL_BASE
       .COMPENSATION           ("SYSTEM_SYNCHRONOUS"),
       .DIVCLK_DIVIDE          (5),
       .REF_JITTER             (0.010),
-      .CLKOUT0_DIVIDE         (12),
+      .CLKOUT0_DIVIDE         (15),
       .CLKOUT0_DUTY_CYCLE     (0.500),
       .CLKOUT0_PHASE          (0.000),
       .CLKOUT1_DIVIDE         (25),
@@ -108,6 +108,8 @@ BUFG clk24_buf
  .I (clkout24));
 
 ODDR2 clkout1_buf (
+  .S(1'b0),
+  .R(1'b0),
   .D0(1'b1),
   .D1(1'b0),
   .C0(mhz24_buf),
@@ -186,8 +188,6 @@ wire           utmi_termselect_w;
 wire           utmi_dppulldown_w;
 wire           utmi_dmpulldown_w;
 
-
-assign ulpi0_reset_o = 1'b0;
 //-----------------------------------------------------------------
 // Reset
 //-----------------------------------------------------------------
@@ -217,7 +217,7 @@ wire [31:0] gpio_out_en_w;
 
 fpga_top
 #(
-    .CLK_FREQ(50000000)
+    .CLK_FREQ(40000000)
    ,.BAUDRATE(1000000)   // SoC UART baud rate
    ,.UART_SPEED(1000000) // Debug bridge UART baud (should match BAUDRATE)
    ,.C_SCK_RATIO(1)      // SPI clock divider (M25P128 maxclock = 54 Mhz)
