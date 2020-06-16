@@ -34,6 +34,8 @@
 #ifndef __USB_SNIFFER_STREAM_DEFS_H__
 #define __USB_SNIFFER_STREAM_DEFS_H__
 
+#define USB_BASE          0x96000000
+
 #define USB_FIFO_SIZE     0x10000   // 64k bytes
 
 #define USB_BUFFER_CFG    0x0
@@ -114,7 +116,7 @@
 #define USB_FIFO_STS          0x18
     #define USB_FIFO_STS_ERR_MASK               0x80000000
     #define USB_FIFO_STS_MSG_MASK               0x40000000
-    #define USB_FIFO_STAT_AVAIL                 0x3fffffff
+    #define USB_FIFO_STS_AVAIL_MASK             0x3fffffff
 
 #define USB_SPEED_HS       0
 #define USB_SPEED_FS       1

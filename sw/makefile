@@ -6,7 +6,7 @@
 TARGET     ?= usb_sniffer
 
 # Options
-CFLAGS      = 
+CFLAGS      = -I ../fpga/usb_sniffer
 LDFLAGS     = 
 LIBS        = -lftdi
 

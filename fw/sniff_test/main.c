@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
     do {
        CfgReg = REG_RD(USB_BASE + USB_BUFFER_CFG);
        LastStatus = REG_RD(USB_BASE + USB_BUFFER_STS);
-       LastAvail = REG_RD(USB_BASE + USB_FIFO_AVAILABLE);
+       LastAvail = REG_RD(USB_BASE + USB_FIFO_STS);
 
        printf("USB_BUFFER_CFG: 0x%x\n",CfgReg);
        LogBufferStatus(LastStatus);
-       printf("USB_FIFO_AVAILABLE: 0x%x\n",LastAvail);
+       printf("USB_FIFO_STS: 0x%x\n",LastAvail);
 
        if(CfgReg != 0) {
           printf("Setting USB_BUFFER_CFG to 0\n");
@@ -62,8 +62,10 @@ int main(int argc, char *argv[])
     } while(CfgReg != 0);
 // enable sniffer
     CfgReg = (speed << USB_BUFFER_CFG_SPEED_SHIFT)
+#if 0
           | (1 << USB_BUFFER_CFG_IGNORE_IN_NAK_SHIFT)
           | (1 << USB_BUFFER_CFG_IGNORE_SOF_SHIFT)
+#endif
     ;
 
     printf("Setting USB_BUFFER_CFG to 0x%x\n",CfgReg);
@@ -77,14 +79,14 @@ int main(int argc, char *argv[])
 
 #if 0
     for( ; ; ) {
-       Avail = REG_RD(USB_BASE + USB_FIFO_AVAILABLE);
+       Avail = REG_RD(USB_BASE + USB_FIFO_STS);
        if(LastAvail != Avail) {
           union {
              uint32_t DataW;
              uint8_t DataB[4];
           } u;
           LastAvail = Avail;
-          printf("USB_FIFO_AVAILABLE: 0x%x\n",LastAvail);
+          printf("USB_FIFO_STS: 0x%x\n",LastAvail);
        }
 
        Status = REG_RD(USB_BASE + USB_BUFFER_STS);
@@ -188,9 +190,9 @@ uint32_t GetCaptureData()
    uint32_t Data;
    uint32_t Avail;
 
-   Avail = REG_RD(USB_BASE + USB_FIFO_AVAILABLE);
+   Avail = REG_RD(USB_BASE + USB_FIFO_STS);
 
-   // printf("Avail: 0x%x\n",Avail);
+   printf("Avail: 0x%x\n",Avail);
    do {
       Status = REG_RD(USB_BASE + USB_BUFFER_STS);
       if(LastStatus != Status) {
@@ -202,12 +204,12 @@ uint32_t GetCaptureData()
          LastCfgReg = CfgReg;
          printf("USB_BUFFER_CFG: 0x%x\n",LastCfgReg);
       }
-      Avail = REG_RD(USB_BASE + USB_FIFO_AVAILABLE);
+      Avail = REG_RD(USB_BASE + USB_FIFO_STS);
    } while(Avail == 0);
 
    Data = REG_RD(USB_BASE + USB_FIFO_READ);
-   Avail = REG_RD(USB_BASE + USB_FIFO_AVAILABLE);
-   // printf("%s: returning 0x%x, Avail: 0x%x\n",__FUNCTION__,Data,Avail);
+   Avail = REG_RD(USB_BASE + USB_FIFO_STS);
+   printf("%s: returning 0x%x, Avail: 0x%x\n",__FUNCTION__,Data,Avail);
 
    return Data;
 }

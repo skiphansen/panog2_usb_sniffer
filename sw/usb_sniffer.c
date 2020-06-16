@@ -38,18 +38,18 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdbool.h>
 
-#include "hw_interface.h"
 #include "usb_defs.h"
 #include "log_format.h"
 #include "usb_helpers.h"
 #include "usb_sniffer.h"
-#include "usb_sniffer_regs.h"
+#include "usb_sniffer_defs.h"
+#include "socket_hw.h"
 
 //-----------------------------------------------------------------
 // Defines
 //-----------------------------------------------------------------
-#define CFG_BASE_ADDR        0x80000000
 #define CHUNK_SIZE           2048
 
 //-----------------------------------------------------------------
@@ -62,80 +62,21 @@ static uint32_t _cfg_reg  = 0;
 //-----------------------------------------------------------------
 // usb_sniffer_init
 //-----------------------------------------------------------------
-int usb_sniffer_init(void)
+int usb_sniffer_init(char *IP)
 {
-    if (hw_interface_init() != 0)
-        return -1;
-
-    return 0;
+   return socket_init(IP);
 }
 //-----------------------------------------------------------------
 // usb_sniffer_close
 //-----------------------------------------------------------------
 int usb_sniffer_close(void)
 {
-    hw_interface_close();
-    return 0;
-}
-//-----------------------------------------------------------------
-// set_base
-//-----------------------------------------------------------------
-static int set_base(uint32_t addr)
-{
-    uint32_t readback = 0;
-
-    hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_BASE, addr);
-    hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_BASE, &readback);
-
-    if (readback != addr)
-        fprintf(stderr, "ERROR: Failed to write buffer address\n");
-
-    return readback == addr;
-}
-//-----------------------------------------------------------------
-// set_end
-//-----------------------------------------------------------------
-static int set_end(uint32_t addr)
-{
-    uint32_t readback = 0;
-
-    hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_END, addr);
-    hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_END, &readback);
-
-    if (readback != addr)
-        fprintf(stderr, "ERROR: Failed to write buffer address\n");
-
-    return readback == addr;
-}
-//-----------------------------------------------------------------
-// usb_sniffer_set_rd_ptr
-//-----------------------------------------------------------------
-int usb_sniffer_set_rd_ptr(uint32_t addr)
-{
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_READ, addr);
-}
-//-----------------------------------------------------------------
-// usb_sniffer_setup_mem
-//-----------------------------------------------------------------
-int usb_sniffer_setup_mem(uint32_t base, uint32_t size)
-{
-    uint32_t end = base + size - 4;
-
-    if (!set_base(base))
-        return 0;
-
-    if (!set_end(end))
-        return 0;
-
-    _mem_base = base;
-    _mem_size = size;
-
-    return 0;
+    return socket_close();
 }
 //-----------------------------------------------------------------
 // usb_sniffer_match_device
 //-----------------------------------------------------------------
-int usb_sniffer_match_device(int dev, int exclude)
+int usb_sniffer_match_device(int dev, bool exclude)
 {
     _cfg_reg &= ~(USB_BUFFER_CFG_DEV_MASK << USB_BUFFER_CFG_DEV_SHIFT);
     _cfg_reg &= ~(USB_BUFFER_CFG_MATCH_DEV_MASK << USB_BUFFER_CFG_MATCH_DEV_SHIFT);
@@ -151,12 +92,12 @@ int usb_sniffer_match_device(int dev, int exclude)
             _cfg_reg |= (1   << USB_BUFFER_CFG_MATCH_DEV_SHIFT);
     }
 
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return 0;
 }
 //-----------------------------------------------------------------
 // usb_sniffer_match_endpoint
 //-----------------------------------------------------------------
-int usb_sniffer_match_endpoint(int ep, int exclude)
+int usb_sniffer_match_endpoint(int ep, bool exclude)
 {
     _cfg_reg &= ~(USB_BUFFER_CFG_EP_MASK << USB_BUFFER_CFG_EP_SHIFT);
     _cfg_reg &= ~(USB_BUFFER_CFG_MATCH_EP_MASK << USB_BUFFER_CFG_MATCH_EP_SHIFT);
@@ -172,7 +113,7 @@ int usb_sniffer_match_endpoint(int ep, int exclude)
             _cfg_reg |= (1  << USB_BUFFER_CFG_MATCH_EP_SHIFT);
     }
 
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return 0;
 }
 //-----------------------------------------------------------------
 // usb_sniffer_drop_sof
@@ -184,8 +125,19 @@ int usb_sniffer_drop_sof(int enable)
     else
         _cfg_reg &= ~(USB_BUFFER_CFG_IGNORE_SOF_MASK << USB_BUFFER_CFG_IGNORE_SOF_SHIFT);
 
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return 0;
 }
+
+int usb_sniffer_drop_in_nak(int enable)
+{
+    if (enable)
+        _cfg_reg |= (USB_BUFFER_CFG_IGNORE_IN_NAK_MASK << USB_BUFFER_CFG_IGNORE_IN_NAK_SHIFT);
+    else
+        _cfg_reg &= ~(USB_BUFFER_CFG_IGNORE_IN_NAK_MASK << USB_BUFFER_CFG_IGNORE_IN_NAK_SHIFT);
+
+    return 0;
+}
+
 //-----------------------------------------------------------------
 // usb_sniffer_continuous_mode
 //-----------------------------------------------------------------
@@ -196,7 +148,7 @@ int usb_sniffer_continuous_mode(int enable)
     else
         _cfg_reg &= ~(USB_BUFFER_CFG_CONT_MASK << USB_BUFFER_CFG_CONT_SHIFT);
 
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return 0;
 }
 //-----------------------------------------------------------------
 // usb_sniffer_set_speed
@@ -206,15 +158,21 @@ int usb_sniffer_set_speed(tUsbSpeed speed)
     _cfg_reg &= ~(USB_BUFFER_CFG_SPEED_MASK << USB_BUFFER_CFG_SPEED_SHIFT);
     _cfg_reg |= (speed << USB_BUFFER_CFG_SPEED_SHIFT);
 
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return 0;
 }
+
+int usb_sniffer_set_config(void)
+{
+   return socket_mem_write_word(USB_BASE + USB_BUFFER_CFG, _cfg_reg);
+}
+
 //-----------------------------------------------------------------
 // usb_sniffer_start
 //-----------------------------------------------------------------
 int usb_sniffer_start(void)
 {
     _cfg_reg |= (USB_BUFFER_CFG_ENABLED_MASK << USB_BUFFER_CFG_ENABLED_SHIFT);
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return socket_mem_write_word(USB_BASE + USB_BUFFER_CFG, _cfg_reg);
 }
 //-----------------------------------------------------------------
 // usb_sniffer_stop
@@ -222,7 +180,7 @@ int usb_sniffer_start(void)
 int usb_sniffer_stop(void)
 {
     _cfg_reg &= ~(USB_BUFFER_CFG_ENABLED_MASK << USB_BUFFER_CFG_ENABLED_SHIFT);
-    return hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_CFG, _cfg_reg);
+    return socket_mem_write_word(USB_BASE + USB_BUFFER_CFG, _cfg_reg);
 }
 //-----------------------------------------------------------------
 // usb_sniffer_triggered
@@ -231,7 +189,7 @@ int usb_sniffer_triggered(void)
 {
     uint32_t status = 0;
 
-    if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_STS, &status) != sizeof(uint32_t))
+    if (socket_mem_read_word(USB_BASE + USB_BUFFER_STS, &status) != sizeof(uint32_t))
     {
         fprintf(stderr, "ERROR: Failed to read status\n");
         return 0;
@@ -243,281 +201,47 @@ int usb_sniffer_triggered(void)
         return 0;
 }
 //-----------------------------------------------------------------
-// usb_sniffer_wrapped
-//-----------------------------------------------------------------
-int usb_sniffer_wrapped(void)
-{
-    uint32_t status = 0;
-
-    if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_STS, &status) != sizeof(uint32_t))
-    {
-        fprintf(stderr, "ERROR: Failed to read status\n");
-        return 0;
-    }
-
-    if (status & (1 << USB_BUFFER_STS_WRAPPED_SHIFT))
-        return 1;
-    else
-        return 0;
-}
-//-----------------------------------------------------------------
 // usb_sniffer_overrun
 //-----------------------------------------------------------------
 int usb_sniffer_overrun(void)
 {
     uint32_t status = 0; 
 
-    if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_STS, &status) != sizeof(uint32_t))
+    if (socket_mem_read_word(USB_BASE + USB_BUFFER_STS, &status) != sizeof(uint32_t))
     {
         fprintf(stderr, "ERROR: Failed to read status\n");
         return 0;
     }
 
-    if (status & (1 << USB_BUFFER_STS_OVERFLOW_SHIFT))
+    if (status & (1 << USB_BUFFER_STS_DATA_LOSS))
         return 1;
     else
         return 0;
 }
 //-----------------------------------------------------------------
-// usb_sniffer_current
+// usb_sniffer_available
 //-----------------------------------------------------------------
-uint32_t usb_sniffer_current(int *overflow)
+uint32_t usb_sniffer_status()
 {
-    uint32_t current = 0;
-
-    // Want overflow status? Read block of 2 words (more effecient)
-    if (overflow)
+    uint32_t Available = 0;
+    if (socket_mem_read_word(USB_BASE + USB_FIFO_STS, &Available) != sizeof(uint32_t))
     {
-        uint32_t read_buf[2];
-        if (hw_mem_read(CFG_BASE_ADDR + USB_BUFFER_STS, (uint8_t*)read_buf, (2 * sizeof(uint32_t))) != (2 * sizeof(uint32_t)))
-        {
-            fprintf(stderr, "ERROR: Failed to read status\n");
-            return 0;
-        }
-    
-        if (read_buf[0] & (1 << USB_BUFFER_STS_OVERFLOW_SHIFT))
-            *overflow = 1;
-        else
-            *overflow = 0;
-
-        current = read_buf[1];
-    }
-    else if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_CURRENT, &current) != sizeof(uint32_t))
-    {
-        fprintf(stderr, "ERROR: Failed to read status\n");
-        return 0;
+        fprintf(stderr, "ERROR: Failed to read available\n");
     }
 
-    return current;
+    return Available;
 }
-//-----------------------------------------------------------------
-// usb_sniffer_base/end
-//-----------------------------------------------------------------
-uint32_t usb_sniffer_base(void) { return _mem_base; }
-uint32_t usb_sniffer_end(void)  { return _mem_base + _mem_size - 4; }
 //-----------------------------------------------------------------
 // usb_sniffer_read_buffer
 //-----------------------------------------------------------------
-int usb_sniffer_read_buffer(uint8_t *buffer, uint32_t base, int size)
+int usb_sniffer_read_buffer(uint8_t *buffer, int size)
 {
-    int err = 0;
-    int i;
-    int chunk;
-    int remain;
-
-    for (i=0;i<size;)
-    {
-        chunk = (size - i);
-        if (chunk > CHUNK_SIZE)
-            chunk = CHUNK_SIZE;
-
-        remain = _mem_size - base - _mem_base;
-        if (chunk > remain)
-            chunk = remain;
-
-        if (hw_mem_read(base, &buffer[i], chunk) != chunk)
-        {
-            fprintf(stderr, "Download: Error downloading file\n");
-            err = 1;
-            break;
-        }        
-
-        i += chunk;
-        base += chunk;
-
-        if (base >= (_mem_base + _mem_size))
-            base = _mem_base;
-    }
-
-    return err ? -1: 0;
-}
-//-----------------------------------------------------------------
-// usb_sniffer_extract_buffer: Extract buffer from target and write to file
-//-----------------------------------------------------------------
-int usb_sniffer_extract_buffer(FILE *f, uint32_t rd_ptr, uint32_t size)
-{
-    int err = 0;
-    int i,j;
-    uint32_t value = 0;
-    uint32_t data = 0;
-
-    uint32_t *buffer = (uint32_t *)malloc(size);
-    assert(buffer);
-
-    assert(!(size & 3));
-
-    // Extract buffer from target
-    if (usb_sniffer_read_buffer((uint8_t*)buffer, rd_ptr, size) != 0)
-    {
-        free(buffer);
-        buffer = NULL;
-        return -1;
-    }
-
-    // Fix data packet ordering
-    int rd_idx = (size / 4) - 1;
-    int count = size / 4;
-
-    while (count > 0)
-    {
-        value = buffer[rd_idx--];
-        count--;
-
-        switch ((value >> LOG_CTRL_TYPE_L) & LOG_CTRL_CYCLE_MASK)
-        {
-            case LOG_CTRL_TYPE_SOF:
-            case LOG_CTRL_TYPE_RST:
-            case LOG_CTRL_TYPE_TOKEN:
-            case LOG_CTRL_TYPE_HSHAKE:
-                break;
-            case LOG_CTRL_TYPE_DATA:
-            {
-                uint32_t len = usb_get_data_length(value);
-
-                //printf("DATA: Len %d\n", len);
-
-                // Shuffle to put control word as first word instead of last
-                for (i = 0; i < len; i+= 4)
-                {
-                    if (rd_idx < 0)
-                    {
-                        fprintf(stderr, "ERROR: Bad data index\n");
-                        err = 1;
-                        count = 0;
-                        break;
-                    }
-
-                    buffer[rd_idx + 1] = buffer[rd_idx];
-                    rd_idx--;
-                    count--;
-                }
-
-                buffer[rd_idx + 1] = value;
-            }
-            break;
-            default:
-                fprintf(stderr, "ERROR: Unknown ID %x\n", value);
-                err = 1;
-                count = 0;
-                break;
-        }
-    }
-
-    // Write fixed buffer to file
-    if (f != NULL && !err)
-        fwrite(buffer, 1, size, f);
-
-    free(buffer);
-    buffer = NULL;
-    return err ? -1 : size;
-}
-
-//-----------------------------------------------------------------
-// interface_test: test hardware interface
-//-----------------------------------------------------------------
-int interface_test()
-{
-   int Ret = 0;
-   uint32_t status;
-   uint32_t config;
-   uint32_t test_bit = 1;
-   uint32_t test_readback;
-   int i;
-   int Err;
-
-   do {
-#if 1
-      if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_CFG, &config) != sizeof(uint32_t))
-      {
-          printf("ERROR: Failed to read config, %d\n",Err);
-          Ret = Err;
-          break;
-      }
-      printf("config: 0x%x\n",config);
-
-      if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_BASE, &status) != sizeof(uint32_t))
-      {
-          printf("ERROR: Failed to read buffer base , %d\n",Err);
-          Ret = Err;
-          break;
-      }
-      printf("buffer base adr: 0x%x\n",status);
-
-      if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_END, &status) != sizeof(uint32_t))
-      {
-          printf("ERROR: Failed to read buffer end, %d\n",Err);
-          Ret = Err;
-          break;
-      }
-      printf("buffer end adr: 0x%x\n",status);
-
-      if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_CURRENT, &status) != sizeof(uint32_t))
-      {
-          printf("ERROR: Failed to read current buffer adr, %d\n",Err);
-          Ret = Err;
-          break;
-      }
-      printf("current buffer adr: 0x%x\n",status);
-
-
-      if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_STS, &status) != sizeof(uint32_t))
-      {
-          printf("ERROR: Failed to read status, %d\n",Err);
-          Ret = Err;
-          break;
-      }
-      printf("status: 0x%x\n",status);
-
-#endif
-      for(i = 0; i < 32; i++) {
-
-         if (hw_mem_write_word(CFG_BASE_ADDR + USB_BUFFER_END, test_bit) != sizeof(uint32_t))
-         {
-             printf("ERROR: Failed to write USB_BUFFER_END, %d\n",Err);
-             Ret = Err;
-             break;
-         }
-
-         test_readback = 0x5555aaaa;
-         if (hw_mem_read_word(CFG_BASE_ADDR + USB_BUFFER_END, &test_readback) != sizeof(uint32_t))
-         {
-             printf("ERROR: Failed to read USB_BUFFER_END, %d\n",Err);
-             Ret = Err;
-             break;
-         }
-
-         if(test_bit != test_readback) {
-            printf("Readback failed wrote: 0x%x, read 0x%x\n",test_bit,test_readback);
-            Ret = -1;
-            break;
-         }
-         test_bit <<= 1;
-      }
-      if(i == 32) {
-         printf("Bitwalk test passed\n");
-      }
-   } while(0);
+   int Ret = socket_read_fifo(buffer,size);
+   if(Ret != size) {
+      fprintf(stderr, "Download: reading FIFO data\n");
+   }
 
    return Ret;
 }
+
 
