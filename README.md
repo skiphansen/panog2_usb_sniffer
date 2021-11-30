@@ -17,7 +17,7 @@ Panologic G2 along with TCP/IP firmware support.
 The main branch should build and be able to obtain an IP address from an
 DHCP server via 10BaseT, 100BaseT or 1000BaseT full duplex connections.  
 
-No USB sniffer code is present yet in the main branch. bit a partially functional 
+No USB sniffer code is present yet in the main branch, but a partially functional 
 version with USB code is available in the add_usb branch. 
 
 ## HW Requirements
