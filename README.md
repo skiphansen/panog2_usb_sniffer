@@ -4,21 +4,37 @@ This is a port of http://github.com/ultraembedded/usb_sniffer to the second
 generation Panologic thin client. 
 
 ## Status
-This is a work in progress.  Currently this repository is being used to 
-develop Ethernet hardware support for the Panologic G2 along with TCP/IP
-firmware support.
+This is a work in progress and has been stalled of late due to the author's
+[ADHD](https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder) and work committments.  But ... I"m still cheap and I still need a
+USB sniffer for other projects so I come back to this one from time to time.
 
-No USB code is present yet. For a fully functional Panologic based USB sniffer 
-heat up your soldering iron and see https://github.com/skiphansen/usb_sniffer/blob/master/fpga/panologic_g2/README.md.
+If you are interested in a fully functional Panologic based USB sniffer **NOW**
+heat up your soldering iron and see my [other USB sniffer project](https://github.com/skiphansen/usb_sniffer/) 
 
-This project currently builds and is able to obtain an IP address from an
+Currently the main branch has working Ethernet hardware support for the 
+Panologic G2 along with TCP/IP firmware support. 
+
+The main branch should build and be able to obtain an IP address from an
 DHCP server via 10BaseT, 100BaseT or 1000BaseT full duplex connections.  
+
+No USB sniffer code is present yet in the main branch. bit a partially functional 
+version with USB code is available in the add_usb branch. 
 
 ## HW Requirements
 
 * A Pano Logic G2 (the one with a DVI port)
 * A suitable 5 volt power supply
 * A JTAG programmer to load the bitstream into the FPGA.
+
+## HW Modifications
+
+For this project it will be necessary to remove the USB hub chip that is 
+between the USB3300 and the USB connectors. Once the hub chip is removed the 
+USB3300's USB bus can be connect directly to two of the Pano's USB connectors to
+make it easy to insert the sniffer between a host and a peripheral.
+
+See [this page](https://github.com/skiphansen/usb_sniffer/tree/master/fpga/panologic_g2#hw-modification-details)
+for the gory details, ignoring the addition of the FT2232H module.
 
 ## Software Requirements
 
